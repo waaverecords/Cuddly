@@ -101,18 +101,18 @@ for j = 1, eventCount do
     end
 end
 
-local columnIndex = 1
+local eventIndex = 1
 local function RenderBytes(bytes)
     for i = 1, math.ceil(#bytes / 3) do
         local bi = (i - 1) * 3
 
-        frames[columnIndex][i].tex:SetColorTexture(
+        frames[eventIndex][i].tex:SetColorTexture(
             bytes[bi + 1] / 255,
             (bytes[bi + 2] or 0) / 255,
             (bytes[bi + 3] or 0) / 255
         )
     end
-    columnIndex = (columnIndex % eventCount) + 1
+    eventIndex = (eventIndex % eventCount) + 1
 end
 
 local eventId = 0
@@ -154,7 +154,7 @@ function UIParent:ADDON_LOADED(name)
         -- TODO: for each unit
         append(StringToBytes(UnitGUID("player")))
         append(IntegerToBytes(UnitHealth("player")))
-
+        
         RenderBytes(bytes)
     end)
 end

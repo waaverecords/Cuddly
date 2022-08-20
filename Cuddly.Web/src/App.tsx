@@ -1,49 +1,70 @@
+import { useEffect } from 'react';
 import * as signalR from '@microsoft/signalr';
-import { useEffect, useState } from 'react';
+import { Class, ClassColor } from './utilities';
+import { clsx } from 'clsx';
 
-const cache = {};
-
-const useSpellMediaUrl = (spellId: number) => {
-    const [url, setUrl] = useState<string>();
-
-    useEffect(() => {
-        if (spellId == undefined) return;
-        if (spellId in cache) {
-            // @ts-ignore
-            setUrl(cache[spellId]);
-            return;
-        }
-
-        fetch(`https://us.api.blizzard.com/data/wow/media/spell/${spellId}?namespace=static-us&locale=en_US&access_token=USw5rw1R2b9ODQThHyYIgQ32fdJZLWNHxs`)
-            .then(async response => {
-                const data = await response.json();
-                // @ts-ignore
-                cache[spellId] = data.assets[0].value;
-                // @ts-ignore
-                setUrl(cache[spellId]);
-            });
-    }, [spellId]);
-
-    return url;
+interface Player {
+    unitGUID: string;
+    name?: string;
+    class?: Class;
+    maxHealth?: number;
+    health?: number;
 };
 
-const SpellImage = ({ 
-    spellId 
-} : {
-    spellId: number
-}) => {
-    const mediaUrl = useSpellMediaUrl(spellId);
-
-    return (
-        <img
-            src={mediaUrl}
-        />
-    );
-};
+const players = new Array<Player>(...[
+    {
+        unitGUID: 'player-G6E9N6A1',
+        class: Class.Monk,
+        maxHealth: 12369,
+        health: 8956
+    },
+    {
+        unitGUID: 'player-G6E9N6A1',
+        name: 'Carrymoredk',
+        class: Class.DeathKnight,
+        maxHealth: 5654654,
+        health: 565465
+    },
+    {
+        unitGUID: 'player-G6E9N6A1',
+        name: 'Hola',
+        class: Class.Priest,
+        maxHealth: 15,
+        health: 13
+    },
+    {
+        unitGUID: 'player-B6E9R6A4',
+    },
+    {
+        unitGUID: 'player-G6E9N6A1',
+        name: 'Hola',
+        maxHealth: 98,
+        health: 41
+    },
+    {
+        unitGUID: 'player-G6E9N6A1',
+        name: 'Rogumem',
+        class: Class.Rogue,
+        maxHealth: 10,
+        health: 10
+    },
+    {
+        unitGUID: 'player-G6E9N6A1',
+        name: 'Locksmith',
+        class: Class.Warlock,
+        maxHealth: 10,
+        health: 9
+    },
+    {
+        unitGUID: 'player-G6E9N6A1',
+        name: 'BonPun',
+        class: Class.Warlock,
+        maxHealth: 10,
+        health: 8
+    },
+]);
 
 export default function App() {
-
-    const [events, setEvents] = useState(new Array<any>());
 
     useEffect(() => {
         const connection = new signalR.HubConnectionBuilder()
@@ -51,48 +72,66 @@ export default function App() {
             .build();
 
         connection.on('event', event => {
-            console.log(event);
-            //setEvents(events => events.concat(event));
         })
 
         connection.start();
     }, []);
 
-    useEffect(() => {
-        window.scrollTo(0, document.body.scrollHeight);
-    }, [events]);
-
     return (
         <div
-            id="app"
+            className="
+                flow-root
+                min-w-screen min-h-screen
+                bg-neutral-800
+            "
         >
-            {events.map((event, i) => (
+
+            <div
+                className="
+                    w-[550px]
+                    m-2 p-1
+                    bg-black
+                "
+            >
                 <div
-                    key={`${event.timestamp}.${event.subEvent}.${event.sourceGUID}.${i}`}
-                    style={{
-                        display: 'flex',
-                        gap: 20
-                    }}
+                    className="
+                        grid grid-cols-4 auto-rows-[65px]
+                        gap-x-1 gap-y-px
+                    "
                 >
-                    <div>
-                        {event.timestamp}
-                    </div>
-                    <div>
-                        {event.subEvent}
-                    </div>
-                    <div>
-                        {event.sourceName}
-                    </div>
-                    <div>
-                        {event.destName}
-                    </div>
-                    {event.spellId && (
-                        <SpellImage 
-                            spellId={event.spellId as number}
-                        />
-                    )}
+                    {players.map(player => (
+                        <div
+                            className="
+                                w-full h-full
+                                relative
+                            "
+                        >
+                            <div
+                                className={clsx(
+                                    `h-full`,
+                                    !player.class && 'bg-neutral-500',
+                                    player.class && `bg-[${ClassColor[player.class]}]`
+                                )}
+                                style={{ width: player.health && player.maxHealth ? `${Math.min(player.health / player.maxHealth * 100, 100)}%` : '100%' }}
+                            />
+                            <div
+                                className={clsx(
+                                    `
+                                        absolute
+                                        left-1/2 top-1/2
+                                        -translate-x-1/2 -translate-y-1/2
+                                        text-xs text-shadow
+                                    `,
+                                    !player.class && 'text-neutral-500',
+                                    player.class && `text-[${ClassColor[player.class]}]`
+                                )}
+                            >
+                                {player.name || player.unitGUID}
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            ))}
+            </div>
         </div>
     );
 };
