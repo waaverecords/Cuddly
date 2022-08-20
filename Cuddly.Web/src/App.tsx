@@ -9,6 +9,7 @@ interface Player {
     class?: Class;
     maxHealth?: number;
     health?: number;
+    shield?: number;
 };
 
 const players = new Array<Player>(...[
@@ -22,8 +23,9 @@ const players = new Array<Player>(...[
         unitGUID: 'player-G6E9N6A1',
         name: 'Carrymoredk',
         class: Class.DeathKnight,
-        maxHealth: 5654654,
-        health: 565465
+        maxHealth: 100,
+        health: 16,
+        shield: 50
     },
     {
         unitGUID: 'player-G6E9N6A1',
@@ -37,9 +39,10 @@ const players = new Array<Player>(...[
     },
     {
         unitGUID: 'player-G6E9N6A1',
-        name: 'Hola',
+        name: 'Derp',
         maxHealth: 98,
-        health: 41
+        health: 41,
+        shield: 38
     },
     {
         unitGUID: 'player-G6E9N6A1',
@@ -61,6 +64,35 @@ const players = new Array<Player>(...[
         class: Class.Warlock,
         maxHealth: 10,
         health: 8
+    },
+    {
+        unitGUID: 'player-G6E9N6A1',
+        name: 'Oonthehunt',
+        class: Class.Hunter,
+        maxHealth: 12,
+        health: 6
+    },
+    {
+        unitGUID: 'player-G6E9N6A1',
+        name: 'Drood',
+        class: Class.Druid,
+        maxHealth: 12,
+        health: 9
+    },
+    {
+        unitGUID: 'player-G6E9N6A1',
+        name: 'Shuntheshaman',
+        class: Class.Shaman,
+        maxHealth: 12,
+        health: 11,
+        shield: 2
+    },
+    {
+        unitGUID: 'player-G6E9N6A1',
+        name: 'Query',
+        class: Class.DemonHunter,
+        maxHealth: 12,
+        health: 9
     },
 ]);
 
@@ -102,6 +134,7 @@ export default function App() {
                     {players.map(player => (
                         <div
                             className="
+                                flex
                                 w-full h-full
                                 relative
                             "
@@ -114,6 +147,17 @@ export default function App() {
                                 )}
                                 style={{ width: player.health && player.maxHealth ? `${Math.min(player.health / player.maxHealth * 100, 100)}%` : '100%' }}
                             />
+                            {player.shield && (
+                                <div
+                                    className="
+                                        flex-1
+                                        h-full
+                                        bg-white opacity-80
+                                    "
+                                    style={{ maxWidth: player.maxHealth && player.shield ? `${player.shield / player.maxHealth * 100}%`: `` }}
+                                >
+                                </div>
+                            )}
                             <div
                                 className={clsx(
                                     `
