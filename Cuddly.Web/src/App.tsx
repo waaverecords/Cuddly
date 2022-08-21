@@ -10,6 +10,7 @@ interface Player {
     maxHealth?: number;
     health?: number;
     shield?: number;
+    isAlive: boolean;
 };
 
 const players = new Array<Player>(...[
@@ -17,7 +18,8 @@ const players = new Array<Player>(...[
         unitGUID: 'player-G6E9N6A1',
         class: Class.Monk,
         maxHealth: 12369,
-        health: 8956
+        health: 8956,
+        isAlive: true
     },
     {
         unitGUID: 'player-G6E9N6A1',
@@ -25,59 +27,69 @@ const players = new Array<Player>(...[
         class: Class.DeathKnight,
         maxHealth: 100,
         health: 16,
-        shield: 50
+        shield: 50,
+        isAlive: true
     },
     {
         unitGUID: 'player-G6E9N6A1',
         name: 'Hola',
         class: Class.Priest,
         maxHealth: 15,
-        health: 13
+        health: 13,
+        isAlive: true
     },
     {
         unitGUID: 'player-B6E9R6A4',
+        isAlive: true
     },
     {
         unitGUID: 'player-G6E9N6A1',
         name: 'Derp',
         maxHealth: 98,
         health: 41,
-        shield: 38
+        shield: 38,
+        isAlive: true
     },
     {
         unitGUID: 'player-G6E9N6A1',
         name: 'Rogumem',
         class: Class.Rogue,
         maxHealth: 10,
-        health: 10
+        health: 10,
+        isAlive: true
     },
     {
         unitGUID: 'player-G6E9N6A1',
         name: 'Locksmith',
         class: Class.Warlock,
         maxHealth: 10,
-        health: 9
+        health: 5,
+        shield: 2,
+        isAlive: false
     },
     {
         unitGUID: 'player-G6E9N6A1',
         name: 'BonPun',
         class: Class.Warlock,
         maxHealth: 10,
-        health: 8
+        health: 8,
+        isAlive: true
     },
     {
         unitGUID: 'player-G6E9N6A1',
         name: 'Oonthehunt',
         class: Class.Hunter,
         maxHealth: 12,
-        health: 6
+        health: 6,
+        isAlive: true
     },
     {
         unitGUID: 'player-G6E9N6A1',
         name: 'Drood',
         class: Class.Druid,
         maxHealth: 12,
-        health: 9
+        health: 9,
+        isAlive: true
     },
     {
         unitGUID: 'player-G6E9N6A1',
@@ -85,14 +97,16 @@ const players = new Array<Player>(...[
         class: Class.Shaman,
         maxHealth: 12,
         health: 11,
-        shield: 2
+        shield: 2,
+        isAlive: true
     },
     {
         unitGUID: 'player-G6E9N6A1',
         name: 'Query',
         class: Class.DemonHunter,
         maxHealth: 12,
-        health: 9
+        health: 9,
+        isAlive: true
     },
 ]);
 
@@ -139,22 +153,24 @@ export default function App() {
                                 relative
                             "
                         >
-                            <div
-                                className={clsx(
-                                    `h-full`,
-                                    !player.class && 'bg-neutral-500',
-                                    player.class && `bg-[${ClassColor[player.class]}]`
-                                )}
-                                style={{ width: player.health && player.maxHealth ? `${Math.min(player.health / player.maxHealth * 100, 100)}%` : '100%' }}
-                            />
-                            {player.shield && (
+                            {player.isAlive && (
+                                <div
+                                    className={clsx(
+                                        `h-full`,
+                                        !player.class && 'bg-neutral-500',
+                                        player.class && `bg-[${ClassColor[player.class]}]`
+                                    )}
+                                    style={{ width: player.health != undefined && player.maxHealth ? `${Math.min(player.health / player.maxHealth * 100, 100)}%` : '100%' }}
+                                />
+                            )}
+                            {player.shield && player.isAlive && (
                                 <div
                                     className="
                                         flex-1
                                         h-full
                                         bg-white opacity-80
                                     "
-                                    style={{ maxWidth: player.maxHealth && player.shield ? `${player.shield / player.maxHealth * 100}%`: `` }}
+                                    style={{ maxWidth: player.maxHealth && player.shield ? `${player.shield / player.maxHealth * 100}%` : `` }}
                                 >
                                 </div>
                             )}
@@ -172,6 +188,18 @@ export default function App() {
                             >
                                 {player.name || player.unitGUID}
                             </div>
+                            {!player.isAlive && (
+                                <div
+                                    className="
+                                        absolute
+                                        left-1/2 top-3/4
+                                        -translate-x-1/2
+                                        text-[0.6rem] text-white
+                                    "
+                                >
+                                    Dead
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
