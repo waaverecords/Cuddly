@@ -1,18 +1,18 @@
 export enum Class {
-    DeathKnight = 'DeathKnight',
-    DemonHunter = 'DemonHunter',
-    Druid = 'Druid',
-    Evoker = 'Evoker',
-    Hunter = 'Hunter',
-    Mage = 'Mage',
-    Monk = 'Monk',
-    Paladin = 'Paladin',
-    Priest = 'Priest',
-    Rogue = 'Rogue',
-    Shaman = 'Shaman',
-    Warlock = 'Warlock',
-    Warrior = 'Warrior',
-};
+    Warrior,
+    Paladin,
+    Hunter,
+    Rogue,
+    Priest,
+    DeathKnight,
+    Shaman,
+    Mage,
+    Warlock,
+    Monk,
+    Druid,
+    DemonHunter,
+    Evoker
+}
 
 export enum ClassColor {
     // bg-[#C41E3A] text-[#C41E3A]

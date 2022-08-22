@@ -124,7 +124,8 @@ end
 EventType = zeroBasedEnum {
     "COMBAT_LOG_EVENT",
     "HEALTH_UPDATE",
-    "MAX_HEALTH_UPDATE"
+    "MAX_HEALTH_UPDATE",
+    "CLASS_UPDATE"
 }
 
 function UIParent:ADDON_LOADED(name)
@@ -183,6 +184,34 @@ function UIParent:ADDON_LOADED(name)
         -- TODO: for each unit
         append(StringToBytes(UnitGUID("player")))
         append(IntegerToBytes(UnitHealthMax("player")))
+        
+        RenderBytes(bytes)
+    end)
+
+    C_Timer.NewTicker(10, function()
+        -- TODO: make it a non in-combat timer
+        local bytes = {}
+        local function append(otherBytes)
+            if type(otherBytes) == "table" then
+                for i = 1, #otherBytes do
+                    bytes[#bytes + 1] = otherBytes[i]
+                end
+                return
+            end
+
+            bytes[#bytes + 1] = otherBytes
+        end
+
+        local unitCount = 1
+
+        append(IntegerToBytes(NextEventId()))
+        append(TimestampToBytes(GetServerTime()))
+        append(EventType.CLASS_UPDATE)
+
+        append(unitCount)
+        -- TODO: for each unit
+        append(StringToBytes(UnitGUID("player")))
+        append(IntegerToBytes(select(3, UnitClass("player")) - 1))
         
         RenderBytes(bytes)
     end)

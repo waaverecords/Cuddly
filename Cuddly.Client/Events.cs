@@ -2,7 +2,8 @@ enum EventType
 {
     COMBAT_LOG_EVENT,
     HEALTH_UPDATE,
-    MAX_HEALTH_UPDATE
+    MAX_HEALTH_UPDATE,
+    CLASS_UPDATE
 }
 
 class Event
@@ -44,9 +45,13 @@ class UnitGUID_Value<T>
     public T Value { get; set; }
 }
 
-class HealthUpdate : Event
+class EventForUnits<T> : Event
 {
-    public List<UnitGUID_Value<int>> Units { get; set; }
+    public List<UnitGUID_Value<T>> Units { get; set; }
 }
 
-class MaxHealthUpdate : HealthUpdate { }
+class HealthUpdate : EventForUnits<int> { }
+
+class MaxHealthUpdate : EventForUnits<int> { }
+
+class ClassUpdate : EventForUnits<int> { }

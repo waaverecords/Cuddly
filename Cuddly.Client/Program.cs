@@ -179,6 +179,26 @@ using (var bitmap = new Bitmap(170, 80, PixelFormat.Format24bppRgb))
                         maxHealthUpdate.Units = units;
                     }
                     break;
+
+                case EventType.CLASS_UPDATE:
+                    {
+                        var classUpdate = new ClassUpdate();
+                        @event = classUpdate.Set(@event);
+
+                        // TODO: extract to function
+                        var unitCount = nextByte();
+                        var units = new List<UnitGUID_Value<int>>();
+                        for (var i = 0; i < unitCount; i++)
+                        {
+                            units.Add(new UnitGUID_Value<int>
+                            {
+                                UnitGUID = nextString(),
+                                Value = nextInteger()
+                            });
+                        }
+                        classUpdate.Units = units;
+                    }
+                    break;
             }
 
             if (events.Add(@event))
