@@ -7,7 +7,7 @@ using System.Text;
 var events = new HashSet<Event>();
 
 var connection = new HubConnectionBuilder()
-    .WithUrl("http://localhost:5015/combatLog/publish")
+    .WithUrl("http://localhost:5015/events/publish")
     .WithAutomaticReconnect()
     .Build();
 connection.StartAsync();
@@ -141,12 +141,43 @@ using (var bitmap = new Bitmap(170, 80, PixelFormat.Format24bppRgb))
                     break;
 
                 case EventType.HEALTH_UPDATE:
-                    var healthUpdate = new HealthUpdate();
-                    @event = healthUpdate.Set(@event);
+                    {
+                        var healthUpdate = new HealthUpdate();
+                        @event = healthUpdate.Set(@event);
 
-                    nextByte();// unit count
-                    healthUpdate.UnitGUID = nextString();
-                    healthUpdate.Health = nextInteger();
+                        // TODO: extract to function 
+                        var unitCount = nextByte();
+                        var units = new List<UnitGUID_Value<int>>();
+                        for (var i = 0; i < unitCount; i++)
+                        {
+                            units.Add(new UnitGUID_Value<int>
+                            {
+                                UnitGUID = nextString(),
+                                Value = nextInteger()
+                            });
+                        }
+                        healthUpdate.Units = units;
+                    }
+                    break;
+
+                case EventType.MAX_HEALTH_UPDATE:
+                    {
+                        var maxHealthUpdate = new MaxHealthUpdate();
+                        @event = maxHealthUpdate.Set(@event);
+
+                        // TODO: extract to function
+                        var unitCount = nextByte();
+                        var units = new List<UnitGUID_Value<int>>();
+                        for (var i = 0; i < unitCount; i++)
+                        {
+                            units.Add(new UnitGUID_Value<int>
+                            {
+                                UnitGUID = nextString(),
+                                Value = nextInteger()
+                            });
+                        }
+                        maxHealthUpdate.Units = units;
+                    }
                     break;
             }
 

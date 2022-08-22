@@ -1,7 +1,8 @@
 enum EventType
 {
     COMBAT_LOG_EVENT,
-    HEALTH_UPDATE
+    HEALTH_UPDATE,
+    MAX_HEALTH_UPDATE
 }
 
 class Event
@@ -37,8 +38,15 @@ class CombatLogEvent : Event
     public Dictionary<string, object> Parameters { get; set; }
 }
 
-class HealthUpdate : Event
+class UnitGUID_Value<T>
 {
     public string UnitGUID { get; set; }
-    public int Health { get; set; }
+    public T Value { get; set; }
 }
+
+class HealthUpdate : Event
+{
+    public List<UnitGUID_Value<int>> Units { get; set; }
+}
+
+class MaxHealthUpdate : HealthUpdate { }

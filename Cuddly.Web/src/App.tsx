@@ -1,9 +1,36 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { Class, ClassColor } from './utilities';
 import { clsx } from 'clsx';
 
-interface Player {
+enum EventType {
+    COMBAT_LOG_EVENT,
+    HEALTH_UPDATE,
+    MAX_HEALTH_UPDATE
+};
+
+interface Event {
+    id: number;
+    timestamp: string;
+    type: EventType;
+}
+
+interface UnitGUID_Value<T> {
+    unitGUID: string;
+    value: T;
+}
+
+interface HealthUpdate extends Event {
+    units: Array<UnitGUID_Value<number>>;
+}
+
+interface MaxHealthUpdate extends HealthUpdate {};
+
+interface CombatLogEvent extends Event {
+    parameters: { [key: string]: string | number };
+}
+
+interface Unit {
     unitGUID: string;
     name?: string;
     class?: Class;
@@ -13,12 +40,20 @@ interface Player {
     isAlive: boolean;
 };
 
-const players = new Array<Player>(...[
+const UNITS = new Array<Unit>(...[
     {
         unitGUID: 'player-G6E9N6A1',
         class: Class.Monk,
         maxHealth: 12369,
         health: 8956,
+        isAlive: true
+    },
+    {
+        unitGUID: 'Player-60-0E495C86',
+        name: 'Minimumaddon',
+        class: Class.Warrior,
+        maxHealth: 80000,
+        health: 8,
         isAlive: true
     },
     {
@@ -107,17 +142,68 @@ const players = new Array<Player>(...[
         maxHealth: 12,
         health: 9,
         isAlive: true
-    },
+    }
 ]);
+
+const unitGUID_name = new Map<string, string>();
 
 export default function App() {
 
+    const [units, setUnits] = useState(UNITS);
+
     useEffect(() => {
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl('http://localhost:5015/combatLog/consume')
+            .withUrl('http://localhost:5015/events/consume')
+            .withAutomaticReconnect()
             .build();
 
-        connection.on('event', event => {
+        connection.on('event', (event: Event) => {
+            switch (event.type) {
+                case EventType.COMBAT_LOG_EVENT:
+                    const combatLogEvent = event as CombatLogEvent;
+
+                    const {
+                        sourceGUID, sourceName,
+                        destGUID, destName
+                    } = combatLogEvent.parameters;
+
+                    if (sourceGUID && sourceName
+                        && !unitGUID_name.has(sourceGUID as string))
+                        unitGUID_name.set(sourceGUID as string, sourceName as string);
+
+                    if (destGUID && destName
+                        && !unitGUID_name.has(destGUID as string))
+                        unitGUID_name.set(destGUID as string, destName as string);
+
+                    break;
+
+                case EventType.HEALTH_UPDATE:
+                    const healthUpdate = event as HealthUpdate;
+
+                    // TODO: extract function
+                    setUnits(units => {
+                        healthUpdate.units.forEach(u => {
+                            const unit = units.find(unit => unit.unitGUID == u.unitGUID);    
+                            if (unit) unit.health = u.value;
+                        });
+                        return [...units];
+                    })
+
+                    break;
+
+                case EventType.MAX_HEALTH_UPDATE:
+                    const maxHealthUpdate = event as MaxHealthUpdate;
+
+                    // TODO: extract function
+                    setUnits(units => {
+                        maxHealthUpdate.units.forEach(u => {
+                            const unit = units.find(unit => unit.unitGUID == u.unitGUID);    
+                            if (unit) unit.maxHealth = u.value;
+                        });
+                        return [...units];
+                    })
+                    break;
+            }
         })
 
         connection.start();
@@ -145,7 +231,7 @@ export default function App() {
                         gap-x-1 gap-y-px
                     "
                 >
-                    {players.map(player => (
+                    {units.map(unit => (
                         <div
                             className="
                                 flex
@@ -153,24 +239,24 @@ export default function App() {
                                 relative
                             "
                         >
-                            {player.isAlive && (
+                            {unit.isAlive && (
                                 <div
                                     className={clsx(
                                         `h-full`,
-                                        !player.class && 'bg-neutral-500',
-                                        player.class && `bg-[${ClassColor[player.class]}]`
+                                        !unit.class && 'bg-neutral-500',
+                                        unit.class && `bg-[${ClassColor[unit.class]}]`
                                     )}
-                                    style={{ width: player.health != undefined && player.maxHealth ? `${Math.min(player.health / player.maxHealth * 100, 100)}%` : '100%' }}
+                                    style={{ width: unit.health != undefined && unit.maxHealth ? `${Math.min(unit.health / unit.maxHealth * 100, 100)}%` : '100%' }}
                                 />
                             )}
-                            {player.shield && player.isAlive && (
+                            {unit.shield && unit.isAlive && (
                                 <div
                                     className="
                                         flex-1
                                         h-full
                                         bg-white opacity-80
                                     "
-                                    style={{ maxWidth: player.maxHealth && player.shield ? `${player.shield / player.maxHealth * 100}%` : `` }}
+                                    style={{ maxWidth: unit.maxHealth && unit.shield ? `${unit.shield / unit.maxHealth * 100}%` : `` }}
                                 >
                                 </div>
                             )}
@@ -182,13 +268,13 @@ export default function App() {
                                         -translate-x-1/2 -translate-y-1/2
                                         text-xs text-shadow
                                     `,
-                                    !player.class && 'text-neutral-500',
-                                    player.class && `text-[${ClassColor[player.class]}]`
+                                    !unit.class && 'text-neutral-500',
+                                    unit.class && `text-[${ClassColor[unit.class]}]`
                                 )}
                             >
-                                {player.name || player.unitGUID}
+                                {unit.name || unit.unitGUID}
                             </div>
-                            {!player.isAlive && (
+                            {!unit.isAlive && (
                                 <div
                                     className="
                                         absolute

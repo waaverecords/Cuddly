@@ -18,7 +18,7 @@ app.UseCors(builder => {
 
 app.MapGet("/", () => "Cuddly is running!");
 
-app.MapHub<CombatLogPublisherHub>("/combatLog/publish");
-app.MapHub<CombatLogConsumerHub>("/combatLog/consume");
+app.MapHub<CombatLogPublisherHub>("/events/publish");
+app.MapHub<CombatLogConsumerHub>("/events/consume");
 
 app.Run();
