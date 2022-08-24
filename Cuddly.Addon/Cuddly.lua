@@ -134,7 +134,7 @@ function UIParent:ADDON_LOADED(name)
     end
 
     C_Timer.NewTicker(0.5, function()
-        -- TODO: extract object
+        -- TODO: extract as class / object
         local bytes = {}
         local function append(otherBytes)
             if type(otherBytes) == "table" then
@@ -147,18 +147,42 @@ function UIParent:ADDON_LOADED(name)
             bytes[#bytes + 1] = otherBytes
         end
 
-        local unitCount = 1
+        -- TODO: send player when not in any group
+        -- TODO: send all party when in party group
+        -- TODO: send all raid when in raid group
 
-        append(IntegerToBytes(NextEventId()))
-        append(TimestampToBytes(GetServerTime()))
-        append(EventType.HEALTH_UPDATE)
+        local i = 1
+        while i <= 40 do
 
-        append(unitCount)
-        -- TODO: for each unit
-        append(StringToBytes(UnitGUID("player")))
-        append(IntegerToBytes(UnitHealth("player")))
-        
-        RenderBytes(bytes)
+            bytes = {}
+
+            append(IntegerToBytes(NextEventId()))
+            append(TimestampToBytes(GetServerTime()))
+            append(EventType.HEALTH_UPDATE)
+
+            local unitCount = 0
+            append(0)
+            local byteIndex = #bytes
+
+            while unitCount < 9 and i <= 40 do
+
+                local name = GetRaidRosterInfo(i)
+                if name ~= nil then
+
+                    local unit = "raid" .. i
+                    append(StringToBytes(UnitGUID(unit)))
+                    append(IntegerToBytes(UnitHealth(unit)))
+                    unitCount = unitCount + 1
+                end
+
+                i = i + 1
+            end
+
+            if unitCount > 0 then
+                bytes[byteIndex] = unitCount
+                RenderBytes(bytes)
+            end
+        end
     end)
 
     C_Timer.NewTicker(1, function()
@@ -174,22 +198,42 @@ function UIParent:ADDON_LOADED(name)
             bytes[#bytes + 1] = otherBytes
         end
 
-        local unitCount = 1
+        local i = 1
+        while i <= 40 do
 
-        append(IntegerToBytes(NextEventId()))
-        append(TimestampToBytes(GetServerTime()))
-        append(EventType.MAX_HEALTH_UPDATE)
+            bytes = {}
 
-        append(unitCount)
-        -- TODO: for each unit
-        append(StringToBytes(UnitGUID("player")))
-        append(IntegerToBytes(UnitHealthMax("player")))
-        
-        RenderBytes(bytes)
+            append(IntegerToBytes(NextEventId()))
+            append(TimestampToBytes(GetServerTime()))
+            append(EventType.MAX_HEALTH_UPDATE)
+
+            local unitCount = 0
+            append(0)
+            local byteIndex = #bytes
+
+            while unitCount < 9 and i <= 40 do
+
+                local name = GetRaidRosterInfo(i)
+                if name ~= nil then
+
+                    local unit = "raid" .. i
+                    append(StringToBytes(UnitGUID(unit)))
+                    append(IntegerToBytes(UnitHealthMax(unit)))
+                    unitCount = unitCount + 1
+                end
+
+                i = i + 1
+            end
+
+            if unitCount > 0 then
+                bytes[byteIndex] = unitCount
+                RenderBytes(bytes)
+            end
+        end
     end)
 
+    -- TODO: only send when out of combat
     C_Timer.NewTicker(10, function()
-        -- TODO: make it a non in-combat timer
         local bytes = {}
         local function append(otherBytes)
             if type(otherBytes) == "table" then
@@ -202,18 +246,38 @@ function UIParent:ADDON_LOADED(name)
             bytes[#bytes + 1] = otherBytes
         end
 
-        local unitCount = 1
+        local i = 1
+        while i <= 40 do
 
-        append(IntegerToBytes(NextEventId()))
-        append(TimestampToBytes(GetServerTime()))
-        append(EventType.CLASS_UPDATE)
+            bytes = {}
 
-        append(unitCount)
-        -- TODO: for each unit
-        append(StringToBytes(UnitGUID("player")))
-        append(IntegerToBytes(select(3, UnitClass("player")) - 1))
-        
-        RenderBytes(bytes)
+            append(IntegerToBytes(NextEventId()))
+            append(TimestampToBytes(GetServerTime()))
+            append(EventType.CLASS_UPDATE)
+
+            local unitCount = 0
+            append(0)
+            local byteIndex = #bytes
+
+            while unitCount < 9 and i <= 40 do
+
+                local name = GetRaidRosterInfo(i)
+                if name ~= nil then
+
+                    local unit = "raid" .. i
+                    append(StringToBytes(UnitGUID(unit)))
+                    append(IntegerToBytes(select(3, UnitClass(unit)) - 1))
+                    unitCount = unitCount + 1
+                end
+
+                i = i + 1
+            end
+
+            if unitCount > 0 then
+                bytes[byteIndex] = unitCount
+                RenderBytes(bytes)
+            end
+        end
     end)
 end
 
