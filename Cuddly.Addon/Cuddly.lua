@@ -1,3 +1,6 @@
+local addonName = ...
+Cuddly = {}
+
 SLASH_RELOAD1 = "/rl"
 local function ReloadHandler()
     C_UI.Reload()
@@ -15,7 +18,7 @@ function string.endsWith(str, endStr)
     return string.sub(str, -endStr:len(), str:len()) == endStr
 end
 
-function zeroBasedEnum(table)
+function ZeroBasedEnum(table)
     for i = 1, #table do
         local value = table[i]
         table[value] = i - 1
@@ -121,16 +124,54 @@ local function NextEventId()
     return eventId
 end
 
-EventType = zeroBasedEnum {
+EventType = ZeroBasedEnum {
     "COMBAT_LOG_EVENT",
     "HEALTH_UPDATE",
     "MAX_HEALTH_UPDATE",
-    "CLASS_UPDATE"
+    "CLASS_UPDATE",
+    "ENCOUNTER_TIMER"
 }
 
+local function OnBigWigsEvent(event, ...)
+    -- TODO: extract as class / object
+    local bytes = {}
+    local function append(otherBytes)
+        if type(otherBytes) == "table" then
+            for i = 1, #otherBytes do
+                bytes[#bytes + 1] = otherBytes[i]
+            end
+            return
+        end
+
+        bytes[#bytes + 1] = otherBytes
+    end
+
+    if event == "BigWigs_StartBar" then
+        local addon, spellId, text, duration, icon = ...
+        
+        append(IntegerToBytes(NextEventId()))
+        append(TimestampToBytes(GetServerTime()))
+        append(EventType.ENCOUNTER_TIMER)
+        
+        append(StringToBytes(text))
+        append(IntegerToBytes(duration))
+
+        RenderBytes(bytes)
+    end
+end
+
 function UIParent:ADDON_LOADED(name)
-    if name ~= "Cuddly" then
+    if name ~= addonName then
         return
+    end
+
+    if BigWigsLoader then
+        BigWigsLoader.RegisterMessage(Cuddly, 'BigWigs_StartBar', OnBigWigsEvent)
+        -- BigWigsLoader.RegisterMessage(Cuddly, "BigWigs_StopBar", OnBigWigsEvent)
+        -- BigWigsLoader.RegisterMessage(Cuddly, "BigWigs_StopBars", OnBigWigsEvent)
+        -- BigWigsLoader.RegisterMessage(Cuddly, "BigWigs_OnBossDisable", OnBigWigsEvent)
+        -- BigWigsLoader.RegisterMessage(Cuddly, "BigWigs_PauseBar", OnBigWigsEvent)
+        -- BigWigsLoader.RegisterMessage(Cuddly, "BigWigs_ResumeBar", OnBigWigsEvent)
     end
 
     C_Timer.NewTicker(0.5, function()
@@ -147,41 +188,67 @@ function UIParent:ADDON_LOADED(name)
             bytes[#bytes + 1] = otherBytes
         end
 
-        -- TODO: send player when not in any group
-        -- TODO: send all party when in party group
-        -- TODO: send all raid when in raid group
+        if IsInRaid() then
+            local i = 1
+            while i <= 40 do
 
-        local i = 1
-        while i <= 40 do
+                bytes = {}
 
-            bytes = {}
+                append(IntegerToBytes(NextEventId()))
+                append(TimestampToBytes(GetServerTime()))
+                append(EventType.HEALTH_UPDATE)
 
+                local unitCount = 0
+                append(0)
+                local byteIndex = #bytes
+
+                while unitCount < 9 and i <= 40 do
+
+                    local name = GetRaidRosterInfo(i)
+                    if name ~= nil then
+
+                        local unit = "raid" .. i
+                        append(StringToBytes(UnitGUID(unit)))
+                        append(IntegerToBytes(UnitHealth(unit)))
+                        unitCount = unitCount + 1
+                    end
+
+                    i = i + 1
+                end
+
+                if unitCount > 0 then
+                    bytes[byteIndex] = unitCount
+                    RenderBytes(bytes)
+                end
+            end
+        else
             append(IntegerToBytes(NextEventId()))
             append(TimestampToBytes(GetServerTime()))
             append(EventType.HEALTH_UPDATE)
 
-            local unitCount = 0
-            append(0)
+            local unitCount = 1
+            append(unitCount)
             local byteIndex = #bytes
 
-            while unitCount < 9 and i <= 40 do
+            append(StringToBytes(UnitGUID("player")))
+            append(IntegerToBytes(UnitHealth("player")))
 
-                local name = GetRaidRosterInfo(i)
-                if name ~= nil then
+            if GetNumSubgroupMembers() > 0 then
+                for i = 1, 5 do
+                    local unit = "party" .. i
+                    local unitGUID = UnitGUID(unit)
 
-                    local unit = "raid" .. i
-                    append(StringToBytes(UnitGUID(unit)))
-                    append(IntegerToBytes(UnitHealth(unit)))
-                    unitCount = unitCount + 1
+                    if unitGUID ~= nil then
+                        append(StringToBytes(unitGUID))
+                        append(IntegerToBytes(UnitHealth(unit)))
+                        unitCount = unitCount + 1
+                    end
                 end
 
-                i = i + 1
+                bytes[byteIndex] = unitCount
             end
 
-            if unitCount > 0 then
-                bytes[byteIndex] = unitCount
-                RenderBytes(bytes)
-            end
+            RenderBytes(bytes)
         end
     end)
 
@@ -292,6 +359,8 @@ function UIParent:COMBAT_LOG_EVENT_UNFILTERED(...)
     -- if sourceName ~= "Minimumaddon" then
     --     return
     -- end
+
+    -- TODO: extract as class / object
     local bytes = {}
     local function append(otherBytes)
         if type(otherBytes) == "table" then

@@ -3,7 +3,8 @@ enum EventType
     COMBAT_LOG_EVENT,
     HEALTH_UPDATE,
     MAX_HEALTH_UPDATE,
-    CLASS_UPDATE
+    CLASS_UPDATE,
+    ENCOUNTER_TIMER
 }
 
 class Event
@@ -37,6 +38,12 @@ class Event
 class CombatLogEvent : Event
 {
     public Dictionary<string, object> Parameters { get; set; }
+}
+
+class EncounterTimer : Event
+{
+    public string Text { get; set; }
+    public int Duration { get; set; }
 }
 
 class UnitGUID_Value<T>

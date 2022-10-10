@@ -199,6 +199,16 @@ using (var bitmap = new Bitmap(170, 80, PixelFormat.Format24bppRgb))
                         classUpdate.Units = units;
                     }
                     break;
+
+                case EventType.ENCOUNTER_TIMER:
+                    {
+                        var encounterTimer = new EncounterTimer();
+                        @event = encounterTimer.Set(@event);
+
+                        encounterTimer.Text = nextString();
+                        encounterTimer.Duration = nextInteger();
+                    }
+                    break;
             }
 
             if (events.Add(@event))
