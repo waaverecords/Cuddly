@@ -1,0 +1,29 @@
+# build
+
+FROM node:16-alpine as builder
+
+ENV NODE_ENV production
+
+USER node
+WORKDIR /home/node
+
+COPY package*.json ./
+RUN npm ci
+
+COPY --chown=node:node . .
+RUN npm run build && npm prune --production
+
+# app
+
+FROM node:16-alpine as app
+
+ENV NODE_ENV production
+
+USER node
+WORKDIR /home/node
+
+RUN npm i serve
+
+COPY --from=builder --chown=node:node /home/node/build/ ./build/
+
+CMD ["node_modules/.bin/serve", "-s", "build", "-l", "80"]
