@@ -1,9 +1,8 @@
-import { useEffect } from 'react';
-import { useArray, useEvents } from '../Hooks';
+import { useArray, useEvents, useInterval } from '../Hooks';
 import { EncounterTimer, EventType } from '../Events';
 
 const EncounterTimers = () => {
-    const [timerArray, addToTimerArray, setTimerArray] = useArray<EncounterTimer>([
+    const [timerArray, addToTimerArray, filterTimerArray] = useArray<EncounterTimer>([
         {
             id: 1,
             timestamp: '166565556',
@@ -38,26 +37,24 @@ const EncounterTimers = () => {
         }
     ]);
 
-    useEffect(() => {
-        const ms = 1000 / 60;
-        const interval = setInterval(() => {
-            timerArray.forEach(timer => {
-                timer.timeLeft -= ms;
-            });
-            setTimerArray(timerArray.filter(timer => timer.timeLeft > 0));
-        }, ms);
-
-        return () => clearInterval(interval);
-    }, []);
-
     useEvents(event => {
         if (event.type == EventType.ENCOUNTER_TIMER) {
+            
             const encounterTimerEvent = event as EncounterTimer;
             encounterTimerEvent.duration *= 1000;
             encounterTimerEvent.timeLeft = encounterTimerEvent.duration;
+
             addToTimerArray(encounterTimerEvent);
         }
     });
+
+    const ms = 1000 / 60;
+    useInterval(() => {
+        timerArray.forEach(timer => {
+            timer.timeLeft -= ms;
+        });
+        filterTimerArray(timer => timer.timeLeft > 0);
+    }, ms);
 
     return (
         <div

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { Event } from './Events';
 
@@ -26,12 +26,30 @@ export function useArray<T>(initialArray = new Array<T>()) {
     return [
         array,
         (value: T) => setArray(array => [...array, value]),
-        (array: Array<T>) => setArray([...array])
+        (predicate: (value: T) => boolean) => setArray(array => [...array.filter(predicate)])
     ] as const;
+};
+
+export function useInterval(callback: () => void, delay: number | null) {
+    const savedCallback = useRef<() => void>();
+
+    useEffect(() => {
+        savedCallback.current = callback;
+    }, [callback]);
+
+    useEffect(() => {
+
+        if (!delay)
+            return;
+
+        const interval = setInterval(() => savedCallback.current!(), delay);
+        return () => clearInterval(interval);
+    }, [delay]);
 }
 
 var connection: signalR.HubConnection | null = null;
 export function useEvents(onEvent: (event: Event) => void) {
+    // TODO: use ref perhaps?
     useEffect(() => {
         if (connection) {
             connection.on('event', onEvent);
@@ -50,4 +68,4 @@ export function useEvents(onEvent: (event: Event) => void) {
             connection = null;
          };
     }, []);
-}
+};
