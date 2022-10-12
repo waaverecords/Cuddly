@@ -2,39 +2,68 @@ import { useState, useEffect, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { Event } from './Events';
 
+type Hooked<T> = T & {
+    hReplace(replaceAction: (prevValue: T) => T): void;
+}
+
+interface HookedSet<T> extends Hooked<Set<T>> {
+    hSet(value: T): void;
+}
+
 export function useSet<T>(initialSet = new Set<T>) {
     const [set, setSet] = useState(initialSet);
 
-    return [
+    return Object.assign(
         set,
-        (value: T) => setSet(set => new Set(set.add(value)))
-    ] as const;
+        {
+            hReplace: setSet,
+            hSet: value => setSet(set => new Set(set.add(value)))
+        } as HookedSet<T>
+    ) as HookedSet<T>;
+}
+
+interface HookedMap<K, V> extends Hooked<Map<K, V>> {
+    hSet(key: K, value: V): void;
+    hDelete(key: K): void;
 }
 
 export function useMap<K, V>(initialMap = new Map<K, V>()) {
     const [map, setMap] = useState(initialMap);
 
-    // TODO: return object wiht all functions?
-    return [
+    return Object.assign(
         map,
-        (key: K, value: V) => setMap(map => new Map(map.set(key, value))),
-        (key: K) => setMap(map => {
-            map.delete(key);
-            return new Map(map);
-        })
-    ] as const;
+        {
+            hReplace: setMap,
+            hSet: (key, value) => setMap(map => new Map(map.set(key, value))),
+            hDelete: key => setMap(map => {
+                map.delete(key);
+                return new Map(map);
+            })
+        } as HookedMap<K, V>
+    ) as HookedMap<K, V>;
+}
+
+interface HookedArray<T> extends Hooked<Array<T>> {
+    hPush(...items: T[]): void;
+    hFilter(predicate: (value: T) => boolean): void;
+    hSort(compareFn: (a: T, b: T) => number): void;
 }
 
 export function useArray<T>(initialArray = new Array<T>()) {
     const [array, setArray] = useState(initialArray);
 
-    // TODO: return object with all functions?
-    return [
+    return Object.assign(
         array,
-        (value: T) => setArray(array => [...array, value]),
-        (predicate: (value: T) => boolean) => setArray(array => [...array.filter(predicate)]),
-        (compareFn: (a: T, b:T) => number) => setArray(array => [...array.sort(compareFn)])
-    ] as const;
+        {
+            hReplace: setArray,
+            hPush: (...items) => setArray(array => {
+                array.push(...items);
+                return [...array];
+            }),
+            hFilter: predicate => setArray(array => [...array.filter(predicate)]),
+            hSort: compareFn => setArray(array => [...array.sort(compareFn)])
+        } as HookedArray<T>
+    )  as HookedArray<T>;
 };
 
 export function useInterval(callback: () => void, delay: number | null) {

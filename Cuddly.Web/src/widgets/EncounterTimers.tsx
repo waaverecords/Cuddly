@@ -3,7 +3,7 @@ import { useArray, useEvents, useInterval } from '../Hooks';
 import { EncounterTimer, EventType } from '../Events';
 
 const EncounterTimers = () => {
-    const [timerArray, addToTimers, filterTimers, sortTimers] = useArray<EncounterTimer>([
+    const timers = useArray<EncounterTimer>([
         {
             id: 3,
             timestamp: '166565556',
@@ -40,7 +40,7 @@ const EncounterTimers = () => {
 
     const sort = (a: EncounterTimer, b: EncounterTimer) => a.timeLeft > b.timeLeft ? 0 : -1;
 
-    useEffect(() => sortTimers(sort), []);
+    useEffect(() => timers.hSort(sort), []);
 
     useEvents(event => {
         if (event.type == EventType.ENCOUNTER_TIMER) {
@@ -49,17 +49,20 @@ const EncounterTimers = () => {
             encounterTimerEvent.duration *= 1000;
             encounterTimerEvent.timeLeft = encounterTimerEvent.duration;
 
-            addToTimers(encounterTimerEvent);
-            sortTimers(sort);
+            timers.hPush(encounterTimerEvent);
+            timers.hSort(sort);
         }
     });
 
     const ms = 1000 / 60;
     useInterval(() => {
-        timerArray.forEach(timer => {
-            timer.timeLeft -= ms;
+        timers.hReplace(timers => {
+            timers.forEach(timer => {
+                timer.timeLeft -= ms;
+            });
+            return timers;
         });
-        filterTimers(timer => timer.timeLeft > 0);
+        timers.hFilter(timer => timer.timeLeft > 0);
     }, ms);
 
     return (
@@ -71,7 +74,7 @@ const EncounterTimers = () => {
                 m-2
             "
         >
-            {timerArray.map(encounterTimer => (
+            {timers.map(encounterTimer => (
                 <Bar
                     key={`${encounterTimer.id}-${encounterTimer.timestamp}`}
                     encounterTimer={encounterTimer}

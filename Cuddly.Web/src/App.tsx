@@ -6,14 +6,14 @@ import EncounterTimers from './widgets/EncounterTimers';
 
 export default function App() {
 
-    const [unitGUIDs, addUnitGUID] = useSet<UnitGUID>();
-    const [nameMap, setName] = useMap<UnitGUID, string>();
-    const [classMap, setClass] = useMap<UnitGUID, Class>();
-    const [raidFlagMap, setRaidFlag, removeRaidFlag] = useMap<UnitGUID, RaidFlag>();
-    const [maxHealthMap, setMaxHealth] = useMap<UnitGUID, number>();
-    const [healthMap, setHealth] = useMap<UnitGUID, number>();
-    const [shieldMap, setShield] = useMap<UnitGUID, number>();
-    const [deadMap, setDead] = useMap<UnitGUID, boolean>();
+    const unitGUIDs = useSet<UnitGUID>();
+    const nameMap = useMap<UnitGUID, string>();
+    const classMap = useMap<UnitGUID, Class>();
+    const raidFlagMap = useMap<UnitGUID, RaidFlag>();
+    const maxHealthMap = useMap<UnitGUID, number>();
+    const healthMap = useMap<UnitGUID, number>();
+    const shieldMap = useMap<UnitGUID, number>();
+    const deadMap = useMap<UnitGUID, boolean>();
 
     useEvents((event: Event) => {
         switch (event.type) {
@@ -28,22 +28,22 @@ export default function App() {
 
                 if (sourceGUID && sourceName
                     && !nameMap.has(sourceGUID as UnitGUID)) {
-                    addUnitGUID(sourceGUID as UnitGUID);
-                    setName(sourceGUID as UnitGUID, sourceName as string);
+                    unitGUIDs.hSet(sourceGUID as UnitGUID);
+                    nameMap.hSet(sourceGUID as UnitGUID, sourceName as string);
                 }
 
                 if (destGUID && destName
                     && !nameMap.has(destGUID as UnitGUID)) {
-                    addUnitGUID(destGUID as UnitGUID);
-                    setName(destGUID as UnitGUID, destName as string);
+                    unitGUIDs.hSet(destGUID as UnitGUID);
+                    nameMap.hSet(destGUID as UnitGUID, destName as string);
                 }
 
-                removeRaidFlag(sourceGUID as UnitGUID);
-                removeRaidFlag(destGUID as UnitGUID);
+                raidFlagMap.hDelete(sourceGUID as UnitGUID);
+                raidFlagMap.hDelete(destGUID as UnitGUID);
                 if (sourceRaidFlags)
-                    setRaidFlag(sourceGUID as UnitGUID, sourceRaidFlags as RaidFlag);
+                    raidFlagMap.hSet(sourceGUID as UnitGUID, sourceRaidFlags as RaidFlag);
                 if (destRaidFlags)
-                    setRaidFlag(destGUID as UnitGUID, destRaidFlags as RaidFlag);
+                    raidFlagMap.hSet(destGUID as UnitGUID, destRaidFlags as RaidFlag);
 
                 break;
 
@@ -51,8 +51,8 @@ export default function App() {
                 const healthUpdate = event as HealthUpdate;
 
                 healthUpdate.units.forEach(u => {
-                    addUnitGUID(u.unitGUID);
-                    setHealth(u.unitGUID, u.value);
+                    unitGUIDs.hSet(u.unitGUID);
+                    healthMap.hSet(u.unitGUID, u.value);
                 });
 
                 break;
@@ -61,8 +61,8 @@ export default function App() {
                 const maxHealthUpdate = event as MaxHealthUpdate;
 
                 maxHealthUpdate.units.forEach(u => {
-                    addUnitGUID(u.unitGUID);
-                    setMaxHealth(u.unitGUID, u.value);
+                    unitGUIDs.hSet(u.unitGUID);
+                    maxHealthMap.hSet(u.unitGUID, u.value);
                 });
 
                 break;
@@ -71,8 +71,8 @@ export default function App() {
                 const classUpdate = event as ClassUpdate;
 
                 classUpdate.units.forEach(u => {
-                    addUnitGUID(u.unitGUID);
-                    setClass(u.unitGUID, u.value);
+                    unitGUIDs.hSet(u.unitGUID);
+                    classMap.hSet(u.unitGUID, u.value);
                 });
 
                 break;
