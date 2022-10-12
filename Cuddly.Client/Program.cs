@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Text;
 
-var events = new HashSet<Event>();
+var events = new List<Event>();
 
 var connection = new HubConnectionBuilder()
     .WithUrl("http://localhost:5015/events/publish")
@@ -90,11 +90,11 @@ using (var bitmap = new Bitmap(170, 80, PixelFormat.Format24bppRgb))
 
             var @event = new Event();
             @event.Id = nextInteger();
-            @event.Timestamp = nextTimestamp();
 
             if (events.Contains(@event))
                 continue;
 
+            @event.Timestamp = nextTimestamp();
             @event.Type = (EventType)nextByte();
 
             switch (@event.Type)
@@ -210,19 +210,19 @@ using (var bitmap = new Bitmap(170, 80, PixelFormat.Format24bppRgb))
                     }
                     break;
             }
-
-            if (events.Add(@event))
+            
+            events.Add(@event);
+            
+            Console.WriteLine("{0}\t{1}", @event.Timestamp, @event.Type);
+            try
             {
-                Console.WriteLine("{0}\t{1}", @event.Timestamp, @event.Type);
-                try
-                {
-                    connection.SendAsync("OnEvent", @event);
-                }
-                catch (Exception ex) { }
+                connection.SendAsync("OnEvent", @event);
             }
-        }
+            catch (Exception) { }
 
-        // TODO only keep eventCount events
+            if (events.Count > bitmap.Width * 2)
+                events.RemoveAt(0);
+        }
 
         stopwatch.Stop();
         Console.WriteLine("{0} ms", stopwatch.ElapsedMilliseconds);

@@ -16,13 +16,7 @@ class Event
     public override bool Equals(Object obj)
     {
         return obj is Event @event
-            && this.Id == @event.Id
-            && this.Timestamp == @event.Timestamp;
-    }
-
-    public override int GetHashCode()
-    {
-        return this.Id.GetHashCode() * this.Timestamp.GetHashCode();
+            && this.Id == @event.Id;
     }
 
     public Event Set(Event @event)
