@@ -23,10 +23,12 @@ export function useMap<K, V>(initialMap = new Map<K, V>()) {
 export function useArray<T>(initialArray = new Array<T>()) {
     const [array, setArray] = useState(initialArray);
 
+    // TODO: return object with all functions?
     return [
         array,
         (value: T) => setArray(array => [...array, value]),
-        (predicate: (value: T) => boolean) => setArray(array => [...array.filter(predicate)])
+        (predicate: (value: T) => boolean) => setArray(array => [...array.filter(predicate)]),
+        (compareFn: (a: T, b:T) => number) => setArray(array => [...array.sort(compareFn)])
     ] as const;
 };
 

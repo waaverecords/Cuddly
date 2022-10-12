@@ -1,24 +1,9 @@
+import { useEffect } from 'react';
 import { useArray, useEvents, useInterval } from '../Hooks';
 import { EncounterTimer, EventType } from '../Events';
 
 const EncounterTimers = () => {
-    const [timerArray, addToTimerArray, filterTimerArray] = useArray<EncounterTimer>([
-        {
-            id: 1,
-            timestamp: '166565556',
-            duration: 12 * 1000,
-            timeLeft: 12 * 1000,
-            text: 'Sins',
-            type: EventType.ENCOUNTER_TIMER
-        },
-        {
-            id: 2,
-            timestamp: '166565556',
-            duration: 22 * 1000,
-            timeLeft: 22 * 1000,
-            text: 'Bottles',
-            type: EventType.ENCOUNTER_TIMER
-        },
+    const [timerArray, addToTimerArray, filterTimerArray, sortTimerArray] = useArray<EncounterTimer>([
         {
             id: 3,
             timestamp: '166565556',
@@ -28,23 +13,44 @@ const EncounterTimers = () => {
             type: EventType.ENCOUNTER_TIMER
         },
         {
+            id: 1,
+            timestamp: '166565556',
+            duration: 12 * 1000,
+            timeLeft: 12 * 1000,
+            text: 'Sins',
+            type: EventType.ENCOUNTER_TIMER
+        },
+        {
             id: 4,
             timestamp: '166565556',
             duration: 88 * 1000,
             timeLeft: 88 * 1000,
             text: 'Focus Anima: Bottles (2)',
             type: EventType.ENCOUNTER_TIMER
+        },
+        {
+            id: 2,
+            timestamp: '166565556',
+            duration: 22 * 1000,
+            timeLeft: 22 * 1000,
+            text: 'Bottles',
+            type: EventType.ENCOUNTER_TIMER
         }
     ]);
 
+    const sort = (a: EncounterTimer, b: EncounterTimer) => a.timeLeft > b.timeLeft ? 0 : -1;
+
+    useEffect(() => sortTimerArray(sort), []);
+
     useEvents(event => {
         if (event.type == EventType.ENCOUNTER_TIMER) {
-            
+
             const encounterTimerEvent = event as EncounterTimer;
             encounterTimerEvent.duration *= 1000;
             encounterTimerEvent.timeLeft = encounterTimerEvent.duration;
 
             addToTimerArray(encounterTimerEvent);
+            sortTimerArray(sort);
         }
     });
 
@@ -61,7 +67,7 @@ const EncounterTimers = () => {
             className="
                 grid
                 gap-x-1 gap-y-px
-                w-[375px]
+                w-[300px]
                 m-2
             "
         >
