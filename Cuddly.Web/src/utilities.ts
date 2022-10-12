@@ -54,3 +54,25 @@ export enum ClassColor {
     // bg-[#C69B6D] text-[#C69B6D]
     Warrior = '#C69B6D'
 }
+
+export enum RaidFlag {
+    Star = 1,
+    Circle = 2,
+    Diamond = 4,
+    Triangle = 8,
+    Moon = 16,
+    Square = 32,
+    Cross = 64,
+    Skull = 128
+}
+
+export const RaidFlagImageUrlMap = new Map<RaidFlag, string>([
+    [RaidFlag.Star, '/media/raidFlags/star.png'],
+    [RaidFlag.Circle, '/media/raidFlags/circle.png'],
+    [RaidFlag.Diamond, '/media/raidFlags/diamond.png'],
+    [RaidFlag.Triangle, '/media/raidFlags/triangle.png'],
+    [RaidFlag.Moon, '/media/raidFlags/moon.png'],
+    [RaidFlag.Square, '/media/raidFlags/square.png'],
+    [RaidFlag.Cross, '/media/raidFlags/cross.png'],
+    [RaidFlag.Skull, '/media/raidFlags/skull.png'],
+]);

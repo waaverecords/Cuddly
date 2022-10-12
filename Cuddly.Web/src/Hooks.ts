@@ -14,9 +14,14 @@ export function useSet<T>(initialSet = new Set<T>) {
 export function useMap<K, V>(initialMap = new Map<K, V>()) {
     const [map, setMap] = useState(initialMap);
 
+    // TODO: return object wiht all functions?
     return [
         map,
-        (key: K, value: V) => setMap(map => new Map(map.set(key, value)))
+        (key: K, value: V) => setMap(map => new Map(map.set(key, value))),
+        (key: K) => setMap(map => {
+            map.delete(key);
+            return new Map(map);
+        })
     ] as const;
 }
 

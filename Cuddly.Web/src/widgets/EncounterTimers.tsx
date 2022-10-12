@@ -3,7 +3,7 @@ import { useArray, useEvents, useInterval } from '../Hooks';
 import { EncounterTimer, EventType } from '../Events';
 
 const EncounterTimers = () => {
-    const [timerArray, addToTimerArray, filterTimerArray, sortTimerArray] = useArray<EncounterTimer>([
+    const [timerArray, addToTimers, filterTimers, sortTimers] = useArray<EncounterTimer>([
         {
             id: 3,
             timestamp: '166565556',
@@ -40,7 +40,7 @@ const EncounterTimers = () => {
 
     const sort = (a: EncounterTimer, b: EncounterTimer) => a.timeLeft > b.timeLeft ? 0 : -1;
 
-    useEffect(() => sortTimerArray(sort), []);
+    useEffect(() => sortTimers(sort), []);
 
     useEvents(event => {
         if (event.type == EventType.ENCOUNTER_TIMER) {
@@ -49,8 +49,8 @@ const EncounterTimers = () => {
             encounterTimerEvent.duration *= 1000;
             encounterTimerEvent.timeLeft = encounterTimerEvent.duration;
 
-            addToTimerArray(encounterTimerEvent);
-            sortTimerArray(sort);
+            addToTimers(encounterTimerEvent);
+            sortTimers(sort);
         }
     });
 
@@ -59,7 +59,7 @@ const EncounterTimers = () => {
         timerArray.forEach(timer => {
             timer.timeLeft -= ms;
         });
-        filterTimerArray(timer => timer.timeLeft > 0);
+        filterTimers(timer => timer.timeLeft > 0);
     }, ms);
 
     return (

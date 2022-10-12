@@ -1,6 +1,6 @@
 import { clsx } from 'clsx';
 import { useSet, useMap, useEvents } from './Hooks';
-import { Class, ClassColor } from './utilities';
+import { Class, ClassColor, RaidFlag, RaidFlagImageUrlMap } from './utilities';
 import { ClassUpdate, CombatLogEvent, Event, EventType, HealthUpdate, MaxHealthUpdate, UnitGUID } from './Events';
 import EncounterTimers from './widgets/EncounterTimers';
 
@@ -9,6 +9,7 @@ export default function App() {
     const [unitGUIDs, addUnitGUID] = useSet<UnitGUID>();
     const [nameMap, setName] = useMap<UnitGUID, string>();
     const [classMap, setClass] = useMap<UnitGUID, Class>();
+    const [raidFlagMap, setRaidFlag, removeRaidFlag] = useMap<UnitGUID, RaidFlag>();
     const [maxHealthMap, setMaxHealth] = useMap<UnitGUID, number>();
     const [healthMap, setHealth] = useMap<UnitGUID, number>();
     const [shieldMap, setShield] = useMap<UnitGUID, number>();
@@ -21,7 +22,8 @@ export default function App() {
 
                 const {
                     sourceGUID, sourceName,
-                    destGUID, destName
+                    destGUID, destName,
+                    sourceRaidFlags, destRaidFlags
                 } = combatLogEvent.parameters;
 
                 if (sourceGUID && sourceName
@@ -35,6 +37,13 @@ export default function App() {
                     addUnitGUID(destGUID as UnitGUID);
                     setName(destGUID as UnitGUID, destName as string);
                 }
+
+                removeRaidFlag(sourceGUID as UnitGUID);
+                removeRaidFlag(destGUID as UnitGUID);
+                if (sourceRaidFlags)
+                    setRaidFlag(sourceGUID as UnitGUID, sourceRaidFlags as RaidFlag);
+                if (destRaidFlags)
+                    setRaidFlag(destGUID as UnitGUID, destRaidFlags as RaidFlag);
 
                 break;
 
@@ -147,6 +156,20 @@ export default function App() {
                                     "
                                 >
                                     Dead
+                                </div>
+                            )}
+                            {raidFlagMap.get(unitGUID) && (
+                                <div
+                                    className="
+                                        absolute
+                                        left-1/2 top-0
+                                        -translate-x-1/2 -translate-y-[10px]
+                                    "
+                                >
+                                    <img
+                                        className="w-[35px]"
+                                        src={RaidFlagImageUrlMap.get(raidFlagMap.get(unitGUID)!)}
+                                    />
                                 </div>
                             )}
                         </div>
