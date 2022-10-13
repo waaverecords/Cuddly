@@ -421,9 +421,7 @@ function UIParent:COMBAT_LOG_EVENT_UNFILTERED(...)
 
     -- suffixes
     if string.endsWith(subEvent, "_DAMAGE") then
-        local amount, overkill, school, resisted, blocked, asbsorbed, critical, glancing, crushing, isOffHand = select(i
-            ,
-            ...)
+        local amount, overkill, school, resisted, blocked, asbsorbed, critical, glancing, crushing, isOffHand = select(i,...)
         append(IntegerToBytes(amount))
         append(IntegerToBytes(overkill > 0 and overkill or 0))
         append(IntegerToBytes(resisted))

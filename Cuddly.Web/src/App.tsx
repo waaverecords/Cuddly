@@ -3,6 +3,7 @@ import { useSet, useMap, useEvents } from './Hooks';
 import { Class, ClassColor, RaidFlag, RaidFlagImageUrlMap } from './utilities';
 import { ClassUpdate, CombatLogEvent, Event, EventType, HealthUpdate, MaxHealthUpdate, UnitGUID } from './Events';
 import EncounterTimers from './widgets/EncounterTimers';
+import AuraIcon from './components/AuraIcon';
 
 export default function App() {
 
@@ -176,6 +177,12 @@ export default function App() {
                     ))}
                 </div>
             </div>
+            <AuraIcon
+                spellId={108280}
+                stacks={3}
+                duration={100}
+                timeLeft={59}
+            />
             <EncounterTimers />
         </div>
     );
