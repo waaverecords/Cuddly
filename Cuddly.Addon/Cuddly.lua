@@ -64,16 +64,24 @@ local function TimestampToBytes(timestamp)
     }
 end
 
+local stringToBytesCache = {}
 local function StringToBytes(str)
-    local bytes = {}
+    if str == nil then
+        return { 0 }
+    end
 
-    if str ~= nil then
-        for i = 1, #str do
-            bytes[i] = str:sub(i, i):byte()
-        end
+    if stringToBytesCache[str] ~= nil then
+        return stringToBytesCache[str]
+    end
+
+    local bytes = {}
+    for i = 1, #str do
+        bytes[i] = str:sub(i, i):byte()
     end
     bytes[#bytes + 1] = 0
 
+    stringToBytesCache[str] = bytes
+    
     return bytes;
 end
 
