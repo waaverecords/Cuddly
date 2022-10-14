@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { v4 } from 'uuid';
 
 interface Props {
@@ -14,6 +14,7 @@ const AuraIcon = ({
     duration = 1,
     timeLeft = 1
 }: Props) => {
+    const maskId = useRef(`mask-${v4()}`);
     const [imageUrl, setImageUrl] = useState<string>();
 
     const getImageUrl = async (spellId: number) => {
@@ -37,7 +38,6 @@ const AuraIcon = ({
     const radiant = degree * Math.PI / 180;
     const x1 = radius + Math.sin(radiant) * radius;
     const y1 = radius - Math.cos(radiant) * radius;
-    const maskId = `mask-${v4()}`;
 
     return (
         <div
@@ -75,7 +75,7 @@ const AuraIcon = ({
                 }}
             >
                 <mask
-                    id={maskId}
+                    id={maskId.current}
                 >
                     <path
                         fill='#ffffff'
@@ -89,7 +89,7 @@ const AuraIcon = ({
                         width: width,
                         height: width
                     }}
-                    mask={`url(#${maskId})`}
+                    mask={`url(#${maskId.current})`}
                     xlinkHref={imageUrl}
                 />
             </svg>

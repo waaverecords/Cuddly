@@ -76,3 +76,10 @@ export const RaidFlagImageUrlMap = new Map<RaidFlag, string>([
     [RaidFlag.Cross, '/media/raidFlags/cross.png'],
     [RaidFlag.Skull, '/media/raidFlags/skull.png'],
 ]);
+
+export enum CombatRole {
+    None,
+    Damager,
+    Tank,
+    Healer
+}

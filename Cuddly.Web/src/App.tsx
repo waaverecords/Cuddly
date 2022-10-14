@@ -1,7 +1,7 @@
 import { clsx } from 'clsx';
 import { useSet, useMap, useEvents } from './Hooks';
-import { Class, ClassColor, RaidFlag, RaidFlagImageUrlMap } from './utilities';
-import { ClassUpdate, CombatLogEvent, Event, EventType, HealthUpdate, MaxHealthUpdate, UnitGUID } from './Events';
+import { Class, ClassColor, CombatRole, RaidFlag, RaidFlagImageUrlMap } from './utilities';
+import { ClassUpdate, CombatLogEvent, CombatRoleUpdate, Event, EventType, HealthUpdate, MaxHealthUpdate, UnitGUID } from './Events';
 import EncounterTimers from './widgets/EncounterTimers';
 import AuraIcon from './components/AuraIcon';
 
@@ -10,6 +10,7 @@ export default function App() {
     const unitGUIDs = useSet<UnitGUID>();
     const nameMap = useMap<UnitGUID, string>();
     const classMap = useMap<UnitGUID, Class>();
+    const combatRoleMap = useMap<UnitGUID, CombatRole>();
     const raidFlagMap = useMap<UnitGUID, RaidFlag>();
     const maxHealthMap = useMap<UnitGUID, number>();
     const healthMap = useMap<UnitGUID, number>();
@@ -74,6 +75,16 @@ export default function App() {
                 classUpdate.units.forEach(u => {
                     unitGUIDs.hSet(u.unitGUID);
                     classMap.hSet(u.unitGUID, u.value);
+                });
+
+                break;
+
+            case EventType.COMBAT_ROLE_UPDATE:
+                const combatRoleUpdate = event as CombatRoleUpdate;
+
+                combatRoleUpdate.units.forEach(u => {
+                    unitGUIDs.hSet(u.unitGUID);
+                    combatRoleMap.hSet(u.unitGUID, u.value);
                 });
 
                 break;

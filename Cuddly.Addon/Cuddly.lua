@@ -137,8 +137,21 @@ EventType = ZeroBasedEnum {
     "HEALTH_UPDATE",
     "MAX_HEALTH_UPDATE",
     "CLASS_UPDATE",
-    "ENCOUNTER_TIMER"
+    "ENCOUNTER_TIMER",
+    "COMBAT_ROLE_UPDATE"
 }
+
+CombatRole = ZeroBasedEnum {
+    "NONE",
+    "DAMAGER",
+    "TANK",
+    "HEALER"
+}
+CombatRoleMap = {}
+CombatRoleMap["NONE"] = CombatRole.NONE
+CombatRoleMap["DAMAGER"] = CombatRole.DAMAGER
+CombatRoleMap["TANK"] = CombatRole.TANK
+CombatRoleMap["HEALER"] = CombatRole.HEALER
 
 local function OnBigWigsEvent(event, ...)
     -- TODO: extract as class / object
@@ -182,6 +195,7 @@ function UIParent:ADDON_LOADED(name)
         -- BigWigsLoader.RegisterMessage(Cuddly, "BigWigs_ResumeBar", OnBigWigsEvent)
     end
 
+    -- HEALTH_UPDATE
     C_Timer.NewTicker(0.5, function()
         -- TODO: extract as class / object
         local bytes = {}
@@ -207,7 +221,7 @@ function UIParent:ADDON_LOADED(name)
                 append(EventType.HEALTH_UPDATE)
 
                 local unitCount = 0
-                append(0)
+                append(unitCount)
                 local byteIndex = #bytes
 
                 while unitCount < 9 and i <= 40 do
@@ -260,6 +274,7 @@ function UIParent:ADDON_LOADED(name)
         end
     end)
 
+    -- MAX_HEALTH_UPDATE
     C_Timer.NewTicker(1, function()
         local bytes = {}
         local function append(otherBytes)
@@ -283,7 +298,7 @@ function UIParent:ADDON_LOADED(name)
             append(EventType.MAX_HEALTH_UPDATE)
 
             local unitCount = 0
-            append(0)
+            append(unitCount)
             local byteIndex = #bytes
 
             while unitCount < 9 and i <= 40 do
@@ -308,6 +323,7 @@ function UIParent:ADDON_LOADED(name)
     end)
 
     -- TODO: only send when out of combat
+    -- CLASS_UPDATE
     C_Timer.NewTicker(10, function()
         local bytes = {}
         local function append(otherBytes)
@@ -331,7 +347,7 @@ function UIParent:ADDON_LOADED(name)
             append(EventType.CLASS_UPDATE)
 
             local unitCount = 0
-            append(0)
+            append(unitCount)
             local byteIndex = #bytes
 
             while unitCount < 9 and i <= 40 do
@@ -342,6 +358,55 @@ function UIParent:ADDON_LOADED(name)
                     local unit = "raid" .. i
                     append(StringToBytes(UnitGUID(unit)))
                     append(IntegerToBytes(select(3, UnitClass(unit)) - 1))
+                    unitCount = unitCount + 1
+                end
+
+                i = i + 1
+            end
+
+            if unitCount > 0 then
+                bytes[byteIndex] = unitCount
+                RenderBytes(bytes)
+            end
+        end
+    end)
+
+    -- TODO: only send when out of combat
+    -- COMBAT_ROLE_UPDATE
+    C_Timer.NewTicker(10, function()
+        local bytes = {}
+        local function append(otherBytes)
+            if type(otherBytes) == "table" then
+                for i = 1, #otherBytes do
+                    bytes[#bytes + 1] = otherBytes[i]
+                end
+                return
+            end
+
+            bytes[#bytes + 1] = otherBytes
+        end
+
+        local i = 1
+        while i <= 40 do
+
+            bytes = {}
+
+            append(IntegerToBytes(NextEventId()))
+            append(TimestampToBytes(GetServerTime()))
+            append(EventType.COMBAT_ROLE_UPDATE)
+
+            local unitCount = 0
+            append(unitCount)
+            local byteIndex = #bytes
+
+            while unitCount < 9 and i <= 40 do
+
+                local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML, combatRole = GetRaidRosterInfo(i)
+                if name ~= nil then
+
+                    local unit = "raid" .. i
+                    append(StringToBytes(UnitGUID(unit)))
+                    append(CombatRoleMap[combatRole])
                     unitCount = unitCount + 1
                 end
 

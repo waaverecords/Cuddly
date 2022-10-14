@@ -209,6 +209,26 @@ using (var bitmap = new Bitmap(170, 80, PixelFormat.Format24bppRgb))
                         encounterTimer.Duration = nextInteger();
                     }
                     break;
+
+                case EventType.COMBAT_ROLE_UPDATE:
+                    {
+                        var combatRoleUpdate = new CombatRoleUpdate();
+                        @event = combatRoleUpdate.Set(@event);
+
+                        // TODO: extract to function
+                        var unitCount = nextByte();
+                        var units = new List<UnitGUID_Value<int>>();
+                        for (var i = 0; i < unitCount; i++)
+                        {
+                            units.Add(new UnitGUID_Value<int>
+                            {
+                                UnitGUID = nextString(),
+                                Value = nextByte()
+                            });
+                        }
+                        combatRoleUpdate.Units = units;
+                    }
+                    break;
             }
             
             events.Add(@event);

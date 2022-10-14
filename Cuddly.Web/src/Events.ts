@@ -1,11 +1,12 @@
-import { Class } from './utilities';
+import { Class, CombatRole } from './utilities';
 
 export enum EventType {
     COMBAT_LOG_EVENT,
     HEALTH_UPDATE,
     MAX_HEALTH_UPDATE,
     CLASS_UPDATE,
-    ENCOUNTER_TIMER
+    ENCOUNTER_TIMER,
+    COMBAT_ROLE_UPDATE
 };
 
 export interface Event {
@@ -13,6 +14,8 @@ export interface Event {
     timestamp: string;
     type: EventType;
 }
+
+export type UnitGUID = string;
 
 export interface CombatLogEvent extends Event {
     parameters: { [key: string]: string | number };
@@ -25,7 +28,7 @@ export interface EncounterTimer extends Event {
 }
 
 export interface UnitGUID_Value<T> {
-    unitGUID: string;
+    unitGUID: UnitGUID;
     value: T;
 }
 
@@ -39,4 +42,4 @@ export interface MaxHealthUpdate extends EventForUnits<number> { }
 
 export interface ClassUpdate extends EventForUnits<Class> { }
 
-export type UnitGUID = string;
+export interface CombatRoleUpdate extends EventForUnits<CombatRole> { }
