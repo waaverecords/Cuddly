@@ -1,7 +1,10 @@
+using Microsoft.Extensions.Caching.Memory;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<BattleNetClient>();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 app.UseCors(builder => {
@@ -24,11 +27,32 @@ app.MapGet(
     "/media-urls/spells/{spellId}", 
     async (
         int spellId,
+        IMemoryCache memoryCache,
         BattleNetClient battleNetClient
     ) =>
     {
-        var medias = await battleNetClient.GetSpellMedia(spellId);
-        return medias.First().Value;
+        var key = $"/media-urls/spells/{spellId}";
+        string url;
+        if (!memoryCache.TryGetValue(key, out url))
+        {
+            try
+            {
+                var medias = await battleNetClient.GetSpellMedia(spellId);
+                url = medias.First().Value;
+            }
+            catch (HttpRequestException)
+            {
+                url = "";
+            }
+            
+            memoryCache.Set(
+                key,
+                url,
+                new MemoryCacheEntryOptions { AbsoluteExpiration = DateTime.Now.AddDays(7) }
+            );
+        }
+
+        return url;
     }
 ).WithMetadata(new ResponseCacheMetaData { Duration = 60 * 1 * 60 * 24 * 7 });
 
