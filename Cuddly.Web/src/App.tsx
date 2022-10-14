@@ -179,9 +179,18 @@ export default function App() {
             </div>
             <AuraIcon
                 spellId={108280}
-                stacks={3}
                 duration={100}
-                timeLeft={59}
+                timeLeft={50}
+            />
+            <AuraIcon
+                spellId={196718}
+                duration={100}
+                timeLeft={50}
+            />
+            <AuraIcon
+                spellId={97462}
+                duration={100}
+                timeLeft={54}
             />
             <EncounterTimers />
         </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { v4 } from 'uuid';
 
 interface Props {
     spellId: number;
@@ -10,8 +11,8 @@ interface Props {
 const AuraIcon = ({ 
     spellId,
     stacks,
-    duration,
-    timeLeft
+    duration = 1,
+    timeLeft = 1
 }: Props) => {
     const [imageUrl, setImageUrl] = useState<string>();
 
@@ -28,17 +29,15 @@ const AuraIcon = ({
     }, [spellId]);
 
     const width = 70;
-
-    const _timeLeft = duration ? timeLeft || duration : 1;
-    const _duration = duration ? duration : 1;
-    
-    const degree = 360 - _timeLeft / _duration * 359.99
     const halfWidth = width / 2;
     const radius = Math.sqrt(Math.pow(halfWidth, 2) * 2);
+    const halfMargin = radius - halfWidth;
+
+    const degree = 360 - timeLeft / duration * 359.99
     const radiant = degree * Math.PI / 180;
     const x1 = radius + Math.sin(radiant) * radius;
     const y1 = radius - Math.cos(radiant) * radius;
-    const halfMargin = radius - halfWidth;
+    const maskId = `mask-${v4()}`;
 
     return (
         <div
@@ -46,20 +45,24 @@ const AuraIcon = ({
                 flex
                 relative
                 bg-lime-400
+                overflow-hidden
             "
             style={{
                 width: width,
                 height: width
             }}
         >
+            {/* back image */}
             <img
                 className="
                     absolute
                     w-full h-full
-                    grayscale
+                    brightness-45
                 "
                 src={imageUrl}
             />
+
+            {/* front image */}
             <svg
                 className="
                     absolute
@@ -72,7 +75,7 @@ const AuraIcon = ({
                 }}
             >
                 <mask
-                    id="mask"
+                    id={maskId}
                 >
                     <path
                         fill='#ffffff'
@@ -86,17 +89,50 @@ const AuraIcon = ({
                         width: width,
                         height: width
                     }}
-                    mask="url(#mask)"
+                    mask={`url(#${maskId})`}
                     xlinkHref={imageUrl}
                 />
             </svg>
+            {duration != timeLeft && (
+                <>
+                    {/* progress circle yellow bar */}
+                    <div
+                        className="
+                            absolute
+                            w-1
+                            left-[calc(50%_-_0.125rem)] bottom-1/2
+                            origin-bottom
+                            bg-yellow-500
+                        "
+                        style={{
+                            height: radius,
+                            rotate: `${degree}deg`
+                        }}
+                    />
+
+                    {/* time left */}
+                    <div
+                        className="
+                            absolute
+                            text-3xl font-bold
+                            left-1/2 top-1/2
+                            -translate-x-1/2 -translate-y-1/2
+                            text-white text-shadow
+                        "
+                    >
+                        {timeLeft}
+                    </div>
+                </>
+            )}
+
+            {/* stacks */}
             {(stacks || 0) > 1 && (
                 <div
                     className="
                         absolute
                         bottom-0 right-0
-                        text-3xl font-semibold
-                        text-white
+                        text-3xl font-bold
+                        text-white text-shadow
                     "
                 >
                     {stacks}
