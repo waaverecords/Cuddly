@@ -16,7 +16,7 @@ class BattleNetClient
 
     private string BasicAuthToken()
     {
-        var battleNetConfig = _configuration.GetSection("Battle.net");
+        var battleNetConfig = _configuration.GetSection("BattleNet");
         var isoEncoded = Convert.ToBase64String(
             Encoding.GetEncoding("ISO-8859-1")
                 .GetBytes($"{battleNetConfig.GetValue<string>("clientId")}:{battleNetConfig.GetValue<string>("clientSecret")}")
