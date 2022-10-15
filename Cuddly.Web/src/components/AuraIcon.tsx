@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { v4 } from 'uuid';
+import { API_URL } from '../config';
 
 interface Props {
     spellId: number;
@@ -18,7 +19,7 @@ const AuraIcon = ({
     const [imageUrl, setImageUrl] = useState<string>();
 
     const getImageUrl = async (spellId: number) => {
-        const response = await fetch(`http://localhost:5015/media-urls/spells/${spellId}`);
+        const response = await fetch(`${API_URL}/media-urls/spells/${spellId}`);
         return await response.text();
     };
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { Event } from './Events';
+import { API_URL } from './config';
 
 type Hooked<T> = T & {
     hReplace(replaceAction: (prevValue: T) => T): void;
@@ -66,6 +67,7 @@ export function useArray<T>(initialArray = new Array<T>()) {
     )  as HookedArray<T>;
 };
 
+// TODO: make it work on react strict
 export function useInterval(callback: () => void, delay: number | null) {
     const savedCallback = useRef<() => void>();
 
@@ -93,7 +95,7 @@ export function useEvents(onEvent: (event: Event) => void) {
         }
 
         connection = new signalR.HubConnectionBuilder()
-            .withUrl('http://localhost:5015/events/consume')
+            .withUrl(`${API_URL}/events/consume`)
             .withAutomaticReconnect()
             .build();
         connection.on('event', onEvent);

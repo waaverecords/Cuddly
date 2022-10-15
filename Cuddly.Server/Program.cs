@@ -12,7 +12,9 @@ app.UseCors(builder => {
     .AllowAnyHeader()
     .WithOrigins(
         "http://localhost:3000",
-        "http://localhost:5015"
+        "http://localhost:5015",
+        "http://127.0.0.1:5173",
+        "http://cuddly.gg"
     )
     .AllowAnyMethod()
     .AllowCredentials()
