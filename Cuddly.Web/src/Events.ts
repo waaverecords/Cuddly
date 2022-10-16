@@ -6,7 +6,8 @@ export enum EventType {
     MAX_HEALTH_UPDATE,
     CLASS_UPDATE,
     ENCOUNTER_TIMER,
-    COMBAT_ROLE_UPDATE
+    COMBAT_ROLE_UPDATE,
+    POWER_UPDATE
 };
 
 export interface Event {
@@ -43,3 +44,5 @@ export interface MaxHealthUpdate extends EventForUnits<number> { }
 export interface ClassUpdate extends EventForUnits<Class> { }
 
 export interface CombatRoleUpdate extends EventForUnits<CombatRole> { }
+
+export interface PowerUpdate extends EventForUnits<number> { }

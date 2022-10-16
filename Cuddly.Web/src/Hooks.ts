@@ -7,7 +7,7 @@ type Hooked<T> = T & {
     hReplace(replaceAction: (prevValue: T) => T): void;
 }
 
-interface HookedSet<T> extends Hooked<Set<T>> {
+export interface HookedSet<T> extends Hooked<Set<T>> {
     hSet(value: T): void;
 }
 
@@ -23,7 +23,7 @@ export function useSet<T>(initialSet = new Set<T>) {
     ) as HookedSet<T>;
 }
 
-interface HookedMap<K, V> extends Hooked<Map<K, V>> {
+export interface HookedMap<K, V> extends Hooked<Map<K, V>> {
     hSet(key: K, value: V): void;
     hDelete(key: K): void;
 }

@@ -5,7 +5,8 @@ enum EventType
     MAX_HEALTH_UPDATE,
     CLASS_UPDATE,
     ENCOUNTER_TIMER,
-    COMBAT_ROLE_UPDATE
+    COMBAT_ROLE_UPDATE,
+    POWER_UPDATE
 }
 
 class Event
@@ -59,3 +60,5 @@ class MaxHealthUpdate : EventForUnits<int> { }
 class ClassUpdate : EventForUnits<int> { }
 
 class CombatRoleUpdate : EventForUnits<int> { }
+
+class PowerUpdate : EventForUnits<int> { }

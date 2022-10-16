@@ -138,7 +138,8 @@ EventType = ZeroBasedEnum {
     "MAX_HEALTH_UPDATE",
     "CLASS_UPDATE",
     "ENCOUNTER_TIMER",
-    "COMBAT_ROLE_UPDATE"
+    "COMBAT_ROLE_UPDATE",
+    "POWER_UPDATE"
 }
 
 CombatRole = ZeroBasedEnum {
@@ -194,7 +195,7 @@ function UIParent:ADDON_LOADED(name)
         -- BigWigsLoader.RegisterMessage(Cuddly, "BigWigs_PauseBar", OnBigWigsEvent)
         -- BigWigsLoader.RegisterMessage(Cuddly, "BigWigs_ResumeBar", OnBigWigsEvent)
     end
-
+    
     -- HEALTH_UPDATE
     C_Timer.NewTicker(0.5, function()
         -- TODO: extract as class / object
@@ -407,6 +408,55 @@ function UIParent:ADDON_LOADED(name)
                     local unit = "raid" .. i
                     append(StringToBytes(UnitGUID(unit)))
                     append(CombatRoleMap[combatRole])
+                    unitCount = unitCount + 1
+                end
+
+                i = i + 1
+            end
+
+            if unitCount > 0 then
+                bytes[byteIndex] = unitCount
+                RenderBytes(bytes)
+            end
+        end
+    end)
+
+    -- TODO: only send when in of combat
+    -- POWER_UPDATE
+    C_Timer.NewTicker(2, function()
+        local bytes = {}
+        local function append(otherBytes)
+            if type(otherBytes) == "table" then
+                for i = 1, #otherBytes do
+                    bytes[#bytes + 1] = otherBytes[i]
+                end
+                return
+            end
+
+            bytes[#bytes + 1] = otherBytes
+        end
+
+        local i = 1
+        while i <= 40 do
+
+            bytes = {}
+
+            append(IntegerToBytes(NextEventId()))
+            append(TimestampToBytes(GetServerTime()))
+            append(EventType.POWER_UPDATE)
+
+            local unitCount = 0
+            append(unitCount)
+            local byteIndex = #bytes
+
+            while unitCount < 9 and i <= 40 do
+
+                local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML, combatRole = GetRaidRosterInfo(i)
+                if name ~= nil and CombatRoleMap[combatRole] == CombatRole.HEALER then
+
+                    local unit = "raid" .. i
+                    append(StringToBytes(UnitGUID(unit)))
+                    append(IntegerToBytes(UnitPower(unit, 0)))
                     unitCount = unitCount + 1
                 end
 

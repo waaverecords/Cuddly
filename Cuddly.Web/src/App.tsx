@@ -1,9 +1,10 @@
 import { clsx } from 'clsx';
 import { useSet, useMap, useEvents } from './Hooks';
 import { Class, ClassColor, CombatRole, RaidFlag, RaidFlagImageUrlMap } from './utilities';
-import { ClassUpdate, CombatLogEvent, CombatRoleUpdate, Event, EventType, HealthUpdate, MaxHealthUpdate, UnitGUID } from './Events';
+import { ClassUpdate, CombatLogEvent, CombatRoleUpdate, Event, EventType, HealthUpdate, MaxHealthUpdate, PowerUpdate, UnitGUID } from './Events';
 import EncounterTimers from './widgets/EncounterTimers';
 import AuraIcon from './components/AuraIcon';
+import HealersMana from './widgets/HealersMana';
 
 export default function App() {
 
@@ -15,6 +16,7 @@ export default function App() {
     const maxHealthMap = useMap<UnitGUID, number>();
     const healthMap = useMap<UnitGUID, number>();
     const shieldMap = useMap<UnitGUID, number>();
+    const powerMap = useMap<UnitGUID, number>();
     const deadMap = useMap<UnitGUID, boolean>();
 
     useEvents((event: Event) => {
@@ -88,6 +90,16 @@ export default function App() {
                 });
 
                 break;
+
+            case EventType.POWER_UPDATE:
+                const powerUpdate = event as PowerUpdate;
+                
+                powerUpdate.units.forEach(u => {
+                    unitGUIDs.hSet(u.unitGUID);
+                    powerMap.hSet(u.unitGUID, u.value);
+                });
+
+                break;
         }
     });
     
@@ -112,7 +124,9 @@ export default function App() {
                         gap-x-1 gap-y-px
                     "
                 >
-                    {Array.from(unitGUIDs).map(unitGUID => (
+                    {Array.from(unitGUIDs)
+                        .filter(unitGUID => unitGUID.startsWith('Player'))
+                        .map(unitGUID => (
                         <div
                             key={unitGUID}
                             className="
@@ -121,6 +135,7 @@ export default function App() {
                                 relative
                             "
                         >
+                            {/* health bar */}
                             {!deadMap.get(unitGUID) && (
                                 <div
                                     className={clsx(
@@ -132,6 +147,8 @@ export default function App() {
                                     style={{ width: healthMap.get(unitGUID) != undefined && maxHealthMap.get(unitGUID) ? `${Math.min(healthMap.get(unitGUID)! / maxHealthMap.get(unitGUID)! * 100, 100)}%` : '100%' }}
                                 />
                             )}
+
+                            {/* shield */}
                             {shieldMap.get(unitGUID) && !deadMap.get(unitGUID) && (
                                 <div
                                     className="
@@ -143,6 +160,8 @@ export default function App() {
                                 >
                                 </div>
                             )}
+
+                            {/* name */}
                             <div
                                 className={clsx(
                                     `
@@ -158,6 +177,8 @@ export default function App() {
                             >
                                 {nameMap.get(unitGUID) || unitGUID}
                             </div>
+
+                            {/* dead */}
                             {deadMap.get(unitGUID) && (
                                 <div
                                     className="
@@ -170,6 +191,8 @@ export default function App() {
                                     Dead
                                 </div>
                             )}
+
+                            {/* raid flag */}
                             {raidFlagMap.get(unitGUID) && (
                                 <div
                                     className="
@@ -204,6 +227,12 @@ export default function App() {
                 timeLeft={54}
             />
             <EncounterTimers />
+            <HealersMana
+                combatRoleMap={combatRoleMap}
+                nameMap={nameMap}
+                classMap={classMap}
+                powerMap={powerMap}
+            />
         </div>
     );
 };
