@@ -207,6 +207,7 @@ using (var bitmap = new Bitmap(170, 80, PixelFormat.Format24bppRgb))
 
                         encounterTimer.Text = nextString();
                         encounterTimer.Duration = nextInteger();
+                        encounterTimer.SpellId = nextInteger();
                     }
                     break;
 

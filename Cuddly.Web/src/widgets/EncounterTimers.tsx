@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useArray, useEvents, useInterval } from '../Hooks';
+import { useArray, useEvents, useInterval, useSpellImageUrl } from '../Hooks';
 import { EncounterTimer, EventType } from '../Events';
 
 const EncounterTimers = () => {
@@ -18,7 +18,8 @@ const EncounterTimers = () => {
             duration: 12 * 1000,
             timeLeft: 12 * 1000,
             text: 'Sins',
-            type: EventType.ENCOUNTER_TIMER
+            type: EventType.ENCOUNTER_TIMER,
+            spellId: 196718
         },
         {
             id: 4,
@@ -34,7 +35,8 @@ const EncounterTimers = () => {
             duration: 22 * 1000,
             timeLeft: 22 * 1000,
             text: 'Bottles',
-            type: EventType.ENCOUNTER_TIMER
+            type: EventType.ENCOUNTER_TIMER,
+            spellId: 196718
         }
     ]);
 
@@ -89,44 +91,64 @@ const Bar = ({
 }: {
     encounterTimer: EncounterTimer
 }) => {
+    const imageUrl = useSpellImageUrl(encounterTimer.spellId!);
+
     return (
         <div
-            className="relative"
+            className="
+                relative
+                flex
+            "
         >
-            <div
+            <img
                 className="
-                    absolute
-                    h-full
-                    bg-[#35478f]
+                    min-h-full aspect-square
+                    bg-lime-400
                 "
-                style={{ width: `${encounterTimer.timeLeft * 100 / encounterTimer.duration}%` }}
+                src={imageUrl}
+                style={{ height: 0 }}
             />
             <div
                 className="
                     relative
-                    flex
-                    py-1.5
-                    
-                    overflow-hidden
-                    text-sm
-                    text-white text-shadow
+                    flex-1
                 "
             >
                 <div
                     className="
-                        flex-1
-                        ml-1
+                        absolute
+                        h-full
+                        bg-[#35478f]
+                    "
+                    style={{ width: `${encounterTimer.timeLeft * 100 / encounterTimer.duration}%` }}
+                />
+                <div
+                    className="
+                        relative
+                        flex
+                        py-1.5
+                        
                         overflow-hidden
-                        text-ellipsis
-                        whitespace-nowrap
+                        text-sm
+                        text-white text-shadow
                     "
                 >
-                    {encounterTimer.text}
-                </div>
-                <div
-                    className="mr-2"
-                >
-                    {Math.ceil(encounterTimer.timeLeft / 1000)}
+                    <div
+                        className="
+                            flex-1
+                            ml-1
+                            overflow-hidden
+                            text-ellipsis
+                            whitespace-nowrap
+                        "
+                    >
+                        {encounterTimer.text}
+                    </div>
+                    <div
+                        className="mr-2"
+                    >
+                        {Math.ceil(encounterTimer.timeLeft / 1000)}
+                    </div>
                 </div>
             </div>
         </div>

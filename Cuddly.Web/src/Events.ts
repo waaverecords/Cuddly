@@ -26,6 +26,7 @@ export interface EncounterTimer extends Event {
     text: string;
     duration: number;
     timeLeft: number;
+    spellId?: number;
 }
 
 export interface UnitGUID_Value<T> {

@@ -177,6 +177,7 @@ local function OnBigWigsEvent(event, ...)
         
         append(StringToBytes(text))
         append(IntegerToBytes(duration))
+        append(IntegerToBytes(type(spellId) ~= "string" and spellId or 0))
 
         RenderBytes(bytes)
     end

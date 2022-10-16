@@ -40,6 +40,7 @@ class EncounterTimer : Event
 {
     public string Text { get; set; }
     public int Duration { get; set; }
+    public int SpellId { get; set; }
 }
 
 class UnitGUID_Value<T>

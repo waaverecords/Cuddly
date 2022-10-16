@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { Event } from './Events';
 import { API_URL } from './config';
+import { GetSpellImageUrl } from './api';
 
 type Hooked<T> = T & {
     hReplace(replaceAction: (prevValue: T) => T): void;
@@ -106,4 +107,17 @@ export function useEvents(onEvent: (event: Event) => void) {
             connection = null;
          };
     }, []);
+};
+
+export function useSpellImageUrl(spellId: number) {
+    const [imageUrl, setImageUrl] = useState<string>();
+
+    useEffect(() => {
+        if (!spellId)
+            return;
+
+        GetSpellImageUrl(spellId).then(setImageUrl);
+    }, []);
+
+    return imageUrl;
 };

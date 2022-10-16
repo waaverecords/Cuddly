@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { v4 } from 'uuid';
-import { API_URL } from '../config';
+import { GetSpellImageUrl } from '../api';
+import { useSpellImageUrl } from '../Hooks';
 
 interface Props {
     spellId: number;
@@ -16,19 +17,7 @@ const AuraIcon = ({
     timeLeft = 1
 }: Props) => {
     const maskId = useRef(`mask-${v4()}`);
-    const [imageUrl, setImageUrl] = useState<string>();
-
-    const getImageUrl = async (spellId: number) => {
-        const response = await fetch(`${API_URL}/media-urls/spells/${spellId}`);
-        return await response.text();
-    };
-
-    useEffect(() => {
-        if (!spellId)
-            return;
-
-        getImageUrl(spellId).then(setImageUrl);
-    }, [spellId]);
+    const imageUrl = useSpellImageUrl(spellId);
 
     const width = 70;
     const halfWidth = width / 2;
