@@ -15,7 +15,6 @@ export default function App() {
     const raidFlagMap = useMap<UnitGUID, RaidFlag>();
     const maxHealthMap = useMap<UnitGUID, number>();
     const healthMap = useMap<UnitGUID, number>();
-    const shieldMap = useMap<UnitGUID, number>();
     const powerMap = useMap<UnitGUID, number>();
     const deadMap = useMap<UnitGUID, boolean>();
 
@@ -146,19 +145,6 @@ export default function App() {
                                     )}
                                     style={{ width: healthMap.get(unitGUID) != undefined && maxHealthMap.get(unitGUID) ? `${Math.min(healthMap.get(unitGUID)! / maxHealthMap.get(unitGUID)! * 100, 100)}%` : '100%' }}
                                 />
-                            )}
-
-                            {/* shield */}
-                            {shieldMap.get(unitGUID) && !deadMap.get(unitGUID) && (
-                                <div
-                                    className="
-                                        flex-1
-                                        h-full
-                                        bg-white opacity-80
-                                    "
-                                    style={{ maxWidth: maxHealthMap.get(unitGUID) && shieldMap.get(unitGUID) ? `${shieldMap.get(unitGUID)! / maxHealthMap.get(unitGUID)! * 100}%` : `` }}
-                                >
-                                </div>
                             )}
 
                             {/* name */}
