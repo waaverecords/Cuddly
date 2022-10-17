@@ -4,6 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<BattleNetClient>();
+builder.Services.AddSingleton<WowheadClient>();
 builder.Services.AddMemoryCache();
 
 var app = builder.Build();
@@ -30,7 +31,8 @@ app.MapGet(
     async (
         int spellId,
         IMemoryCache memoryCache,
-        BattleNetClient battleNetClient
+        BattleNetClient battleNetClient,
+        WowheadClient wowheadClient
     ) =>
     {
         var key = $"/media-urls/spells/{spellId}";
@@ -44,8 +46,11 @@ app.MapGet(
             }
             catch (HttpRequestException)
             {
-                url = "";
+                url = null;
             }
+
+            if (string.IsNullOrEmpty(url))
+                url = await wowheadClient.GetSpellImageUrl(spellId);
             
             memoryCache.Set(
                 key,
