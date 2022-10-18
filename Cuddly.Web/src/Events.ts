@@ -1,4 +1,4 @@
-import { Class, CombatRole } from './utilities';
+import { Class, CombatRole } from './wowUtilities';
 
 export enum EventType {
     COMBAT_LOG_EVENT,

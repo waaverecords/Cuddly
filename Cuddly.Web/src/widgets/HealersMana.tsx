@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { UnitGUID } from "../Events";
 import { HookedMap } from "../Hooks";
-import { Class, ClassColor, CombatRole } from "../utilities";
+import { Class, ClassColor, CombatRole } from "../wowUtilities";
 
 interface Props {
     nameMap: HookedMap<UnitGUID, string>;

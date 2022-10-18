@@ -1,41 +1,39 @@
 import { useEffect } from 'react';
 import { useArray, useEvents, useInterval, useSpellImageUrl } from '../Hooks';
-import { EncounterTimer, EventType } from '../Events';
+import { EncounterTimer as EncounterTimerEvent, EventType } from '../Events';
+import { Timer } from '../utilities';
+
+interface EncounterTimer extends Timer {
+    spellId?: number;
+    text: string;
+};
 
 const EncounterTimers = () => {
     const timers = useArray<EncounterTimer>([
         {
-            id: 3,
-            timestamp: '166565556',
+            key: 1,
             duration: 33 * 1000,
             timeLeft: 33 * 1000,
-            text: 'Adds (1)',
-            type: EventType.ENCOUNTER_TIMER
+            text: 'Adds (1)'
         },
         {
-            id: 1,
-            timestamp: '166565556',
+            key: 2,
             duration: 12 * 1000,
             timeLeft: 12 * 1000,
             text: 'Sins',
-            type: EventType.ENCOUNTER_TIMER,
             spellId: 196718
         },
         {
-            id: 4,
-            timestamp: '166565556',
+            key: 3,
             duration: 88 * 1000,
             timeLeft: 88 * 1000,
-            text: 'Focus Anima: Bottles (2)',
-            type: EventType.ENCOUNTER_TIMER
+            text: 'Focus Anima: Bottles (2)'
         },
         {
-            id: 2,
-            timestamp: '166565556',
+            key: 4,
             duration: 22 * 1000,
             timeLeft: 22 * 1000,
             text: 'Bottles',
-            type: EventType.ENCOUNTER_TIMER,
             spellId: 196718
         }
     ]);
@@ -45,15 +43,22 @@ const EncounterTimers = () => {
     useEffect(() => timers.hSort(sort), []);
 
     useEvents(event => {
-        if (event.type == EventType.ENCOUNTER_TIMER) {
+        if (event.type != EventType.ENCOUNTER_TIMER)
+            return;
 
-            const encounterTimerEvent = event as EncounterTimer;
-            encounterTimerEvent.duration *= 1000;
-            encounterTimerEvent.timeLeft = encounterTimerEvent.duration;
+        const encounterTimerEvent = event as EncounterTimerEvent;
+        const { duration, spellId, text } = encounterTimerEvent;
 
-            timers.hPush(encounterTimerEvent);
-            timers.hSort(sort);
-        }
+        const timer = {
+            key: `${event.id}-${event.timestamp}`,
+            duration: 1000 * duration,
+            timeLeft: 1000 * duration,
+            spellId,
+            text
+        } as EncounterTimer;
+
+        timers.hPush(timer);
+        timers.hSort(sort);
     });
 
     const ms = 1000 / 60;
@@ -76,10 +81,10 @@ const EncounterTimers = () => {
                 m-2
             "
         >
-            {timers.map(encounterTimer => (
+            {timers.map(timer => (
                 <Bar
-                    key={`${encounterTimer.id}-${encounterTimer.timestamp}`}
-                    encounterTimer={encounterTimer}
+                    key={timer.key}
+                    encounterTimer={timer}
                 />
             ))}
         </div>

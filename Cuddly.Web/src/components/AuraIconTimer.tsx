@@ -1,6 +1,5 @@
-import { useEffect, useState, useRef } from 'react';
+import { useRef } from 'react';
 import { v4 } from 'uuid';
-import { GetSpellImageUrl } from '../api';
 import { useSpellImageUrl } from '../Hooks';
 
 interface Props {
@@ -10,7 +9,7 @@ interface Props {
     timeLeft?: number;
 }
 
-const AuraIcon = ({ 
+const AuraIconTimer = ({ 
     spellId,
     stacks,
     duration = 1,
@@ -110,7 +109,7 @@ const AuraIcon = ({
                             text-white text-shadow
                         "
                     >
-                        {timeLeft}
+                        {Math.ceil(timeLeft / 1000)}
                     </div>
                 </>
             )}
@@ -132,4 +131,4 @@ const AuraIcon = ({
     );
 };
 
-export default AuraIcon;
+export default AuraIconTimer;

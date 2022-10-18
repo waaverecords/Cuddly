@@ -1,10 +1,10 @@
 import { clsx } from 'clsx';
 import { useSet, useMap, useEvents } from './Hooks';
-import { Class, ClassColor, CombatRole, RaidFlag, RaidFlagImageUrlMap } from './utilities';
+import { Class, ClassColor, CombatRole, RaidFlag, RaidFlagImageUrlMap } from './wowUtilities';
 import { ClassUpdate, CombatLogEvent, CombatRoleUpdate, Event, EventType, HealthUpdate, MaxHealthUpdate, PowerUpdate, UnitGUID } from './Events';
 import EncounterTimers from './widgets/EncounterTimers';
-import AuraIcon from './components/AuraIcon';
 import HealersMana from './widgets/HealersMana';
+import ActiveRaidCooldownTimers from './widgets/ActiveRaidCooldownTimers';
 
 export default function App() {
 
@@ -197,20 +197,9 @@ export default function App() {
                     ))}
                 </div>
             </div>
-            <AuraIcon
-                spellId={108280}
-                duration={100}
-                timeLeft={50}
-            />
-            <AuraIcon
-                spellId={196718}
-                duration={100}
-                timeLeft={50}
-            />
-            <AuraIcon
-                spellId={97462}
-                duration={100}
-                timeLeft={54}
+            <ActiveRaidCooldownTimers
+                nameMap={nameMap}
+                classMap={classMap}
             />
             <EncounterTimers />
             <HealersMana
