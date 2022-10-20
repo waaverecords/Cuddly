@@ -87,3 +87,9 @@ export enum CombatRole {
 export enum CombatLogEvent {
     SPELL_CAST_SUCCESS = "SPELL_CAST_SUCCESS"
 }
+
+export enum RaidDifficultyId {
+    Normal = 14,
+    Heroic = 15,
+    Mythic = 16
+}

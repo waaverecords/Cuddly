@@ -1,10 +1,11 @@
 import { clsx } from 'clsx';
 import { useSet, useMap, useEvents } from './Hooks';
-import { Class, ClassColor, CombatRole, RaidFlag, RaidFlagImageUrlMap } from './wowUtilities';
-import { ClassUpdate, CombatLogEvent, CombatRoleUpdate, Event, EventType, HealthUpdate, MaxHealthUpdate, PowerUpdate, UnitGUID } from './Events';
+import { Class, ClassColor, CombatRole, RaidDifficultyId, RaidFlag, RaidFlagImageUrlMap } from './wowUtilities';
+import { ClassUpdate, CombatLogEvent, CombatRoleUpdate, EncounterStart, Event, EventType, HealthUpdate, MaxHealthUpdate, PowerUpdate, UnitGUID } from './Events';
 import EncounterTimers from './widgets/EncounterTimers';
 import HealersMana from './widgets/HealersMana';
 import ActiveRaidCooldownTimers from './widgets/ActiveRaidCooldownTimers';
+import { useState } from 'react';
 
 export default function App() {
 
@@ -17,6 +18,7 @@ export default function App() {
     const healthMap = useMap<UnitGUID, number>();
     const powerMap = useMap<UnitGUID, number>();
     const deadMap = useMap<UnitGUID, boolean>();
+    const [raidDifficulty, setRaidDifficulty] = useState<RaidDifficultyId>();
 
     useEvents((event: Event) => {
         switch (event.type) {
@@ -97,6 +99,13 @@ export default function App() {
                     unitGUIDs.hSet(u.unitGUID);
                     powerMap.hSet(u.unitGUID, u.value);
                 });
+
+                break;
+
+            case EventType.ENCOUNTER_START:
+                const encounterStart = event as EncounterStart;
+
+                setRaidDifficulty(encounterStart.difficultyId);
 
                 break;
         }
@@ -201,7 +210,9 @@ export default function App() {
                 nameMap={nameMap}
                 classMap={classMap}
             />
-            <EncounterTimers />
+            <EncounterTimers
+                raidDifficultyId={raidDifficulty}
+            />
             <HealersMana
                 combatRoleMap={combatRoleMap}
                 nameMap={nameMap}

@@ -139,7 +139,9 @@ EventType = ZeroBasedEnum {
     "CLASS_UPDATE",
     "ENCOUNTER_TIMER",
     "COMBAT_ROLE_UPDATE",
-    "POWER_UPDATE"
+    "POWER_UPDATE",
+    "ENCOUNTER_START",
+    "ENCOUNTER_END"
 }
 
 CombatRole = ZeroBasedEnum {
@@ -545,6 +547,55 @@ function UIParent:ADDON_LOADED(name)
     end)
 end
 
+function UIParent:ENCOUNTER_START(encounterId, encounterName, difficultyId)
+    -- TODO: extract as class / object
+    local bytes = {}
+    local function append(otherBytes)
+        if type(otherBytes) == "table" then
+            for i = 1, #otherBytes do
+                bytes[#bytes + 1] = otherBytes[i]
+            end
+            return
+        end
+
+        bytes[#bytes + 1] = otherBytes
+    end
+
+    append(IntegerToBytes(NextEventId()))
+    append(TimestampToBytes(GetServerTime()))
+    append(EventType.ENCOUNTER_START)
+    
+    append(IntegerToBytes(encounterId))
+    append(StringToBytes(encounterName))
+    append(IntegerToBytes(difficultyId))
+
+    RenderBytes(bytes)
+end
+
+function UIParent:ENCOUNTER_END(encounterId, _, _, _, success)
+    -- TODO: extract as class / object
+    local bytes = {}
+    local function append(otherBytes)
+        if type(otherBytes) == "table" then
+            for i = 1, #otherBytes do
+                bytes[#bytes + 1] = otherBytes[i]
+            end
+            return
+        end
+
+        bytes[#bytes + 1] = otherBytes
+    end
+
+    append(IntegerToBytes(NextEventId()))
+    append(TimestampToBytes(GetServerTime()))
+    append(EventType.ENCOUNTER_END)
+    
+    append(IntegerToBytes(encounterId))
+    append(success)
+
+    RenderBytes(bytes)
+end
+
 function UIParent:COMBAT_LOG_EVENT_UNFILTERED(...)
     local timestamp, subEvent, hideCaster, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
     -- if not string.startsWith(subEvent, "SPELL") then
@@ -632,6 +683,8 @@ end
 
 UIParent:RegisterEvent("ADDON_LOADED")
 UIParent:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+UIParent:RegisterEvent("ENCOUNTER_START")
+UIParent:RegisterEvent("ENCOUNTER_END")
 
 UIParent:SetScript(
     "OnEvent",

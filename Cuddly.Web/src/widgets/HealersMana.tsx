@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { Fragment } from "react";
 import { UnitGUID } from "../Events";
 import { HookedMap } from "../Hooks";
 import { Class, ClassColor, CombatRole } from "../wowUtilities";
@@ -28,7 +29,9 @@ const HealersMana = ({
             {Array.from(combatRoleMap)
                 .filter(([unitGUID, combatRole]) => combatRole == CombatRole.Healer)
                 .map(([unitGUID]) => (
-                <>
+                <Fragment
+                    key={unitGUID}
+                >
                     {/* name */}
                     <div
                         className={clsx(
@@ -52,7 +55,7 @@ const HealersMana = ({
                             <>{Math.floor(100 * powerMap.get(unitGUID)! / 50000)}</>
                         )}
                     </div>
-                </>
+                </Fragment>
             ))}
         </div>
     );

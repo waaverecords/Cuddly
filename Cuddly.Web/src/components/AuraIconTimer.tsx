@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { v4 } from 'uuid';
 import { useSpellImageUrl } from '../Hooks';
+import WowheadTooltip from './WowheadTooltip';
 
 interface Props {
     spellId: number;
@@ -29,105 +30,109 @@ const AuraIconTimer = ({
     const y1 = radius - Math.cos(radiant) * radius;
 
     return (
-        <div
-            className="
-                flex
-                relative
-                bg-lime-400
-                overflow-hidden
-            "
-            style={{
-                width: width,
-                height: width
-            }}
+        <WowheadTooltip
+            spellId={spellId}
         >
-            {/* back image */}
-            <img
+            <div
                 className="
-                    absolute
-                    w-full h-full
-                    brightness-45
-                "
-                src={imageUrl}
-            />
-
-            {/* front image */}
-            <svg
-                className="
-                    absolute
-                    left-1/2 top-1/2
-                    -translate-x-1/2 -translate-y-1/2
+                    flex
+                    relative
+                    bg-lime-400
+                    overflow-hidden
                 "
                 style={{
-                    width: `${radius * 2}px`,
-                    height: `${radius * 2}px`,
+                    width: width,
+                    height: width
                 }}
             >
-                <mask
-                    id={maskId.current}
-                >
-                    <path
-                        fill='#ffffff'
-                        d={`M ${radius},0 A ${radius},${radius} 0 ${radiant > Math.PI ? 0 : 1} 0 ${x1},${y1} L ${radius},${radius} Z`}
-                    />
-                </mask>
-                <image
-                    x={halfMargin}
-                    y={halfMargin}
-                    style={{
-                        width: width,
-                        height: width
-                    }}
-                    mask={`url(#${maskId.current})`}
-                    xlinkHref={imageUrl}
+                {/* back image */}
+                <img
+                    className="
+                        absolute
+                        w-full h-full
+                        brightness-45
+                    "
+                    src={imageUrl}
                 />
-            </svg>
-            {duration != timeLeft && (
-                <>
-                    {/* progress circle yellow bar */}
-                    <div
-                        className="
-                            absolute
-                            w-1
-                            left-[calc(50%_-_0.125rem)] bottom-1/2
-                            origin-bottom
-                            bg-yellow-500
-                        "
-                        style={{
-                            height: radius,
-                            rotate: `${degree}deg`
-                        }}
-                    />
 
-                    {/* time left */}
+                {/* front image */}
+                <svg
+                    className="
+                        absolute
+                        left-1/2 top-1/2
+                        -translate-x-1/2 -translate-y-1/2
+                    "
+                    style={{
+                        width: `${radius * 2}px`,
+                        height: `${radius * 2}px`,
+                    }}
+                >
+                    <mask
+                        id={maskId.current}
+                    >
+                        <path
+                            fill='#ffffff'
+                            d={`M ${radius},0 A ${radius},${radius} 0 ${radiant > Math.PI ? 0 : 1} 0 ${x1},${y1} L ${radius},${radius} Z`}
+                        />
+                    </mask>
+                    <image
+                        x={halfMargin}
+                        y={halfMargin}
+                        style={{
+                            width: width,
+                            height: width
+                        }}
+                        mask={`url(#${maskId.current})`}
+                        xlinkHref={imageUrl}
+                    />
+                </svg>
+                {duration != timeLeft && (
+                    <>
+                        {/* progress circle yellow bar */}
+                        <div
+                            className="
+                                absolute
+                                w-1
+                                left-[calc(50%_-_0.125rem)] bottom-1/2
+                                origin-bottom
+                                bg-yellow-500
+                            "
+                            style={{
+                                height: radius,
+                                rotate: `${degree}deg`
+                            }}
+                        />
+
+                        {/* time left */}
+                        <div
+                            className="
+                                absolute
+                                text-3xl font-bold
+                                left-1/2 top-1/2
+                                -translate-x-1/2 -translate-y-1/2
+                                text-white text-shadow
+                            "
+                        >
+                            {Math.ceil(timeLeft / 1000)}
+                        </div>
+                    </>
+                )}
+
+                {/* stacks */}
+                {(stacks || 0) > 1 && (
                     <div
                         className="
                             absolute
+                            bottom-0 right-0
                             text-3xl font-bold
-                            left-1/2 top-1/2
-                            -translate-x-1/2 -translate-y-1/2
                             text-white text-shadow
                         "
                     >
-                        {Math.ceil(timeLeft / 1000)}
+                        {stacks}
                     </div>
-                </>
-            )}
-
-            {/* stacks */}
-            {(stacks || 0) > 1 && (
-                <div
-                    className="
-                        absolute
-                        bottom-0 right-0
-                        text-3xl font-bold
-                        text-white text-shadow
-                    "
-                >
-                    {stacks}
-                </div>
-            )}
-        </div>
+                )}
+            </div>
+        </WowheadTooltip>
     );
 };
 

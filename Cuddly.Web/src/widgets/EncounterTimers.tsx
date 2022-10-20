@@ -2,13 +2,21 @@ import { useEffect } from 'react';
 import { useArray, useEvents, useInterval, useSpellImageUrl } from '../Hooks';
 import { EncounterTimer as EncounterTimerEvent, EventType } from '../Events';
 import { Timer } from '../utilities';
+import WowheadTooltip from '../components/WowheadTooltip';
+import { RaidDifficultyId } from '../wowUtilities';
 
 interface EncounterTimer extends Timer {
     spellId?: number;
     text: string;
 };
 
-const EncounterTimers = () => {
+interface Props {
+    raidDifficultyId?: RaidDifficultyId;
+}
+
+const EncounterTimers = ({
+    raidDifficultyId
+}: Props) => {
     const timers = useArray<EncounterTimer>([
         {
             key: 1,
@@ -34,7 +42,7 @@ const EncounterTimers = () => {
             duration: 22 * 1000,
             timeLeft: 22 * 1000,
             text: 'Bottles',
-            spellId: 196718
+            spellId: 330713
         }
     ]);
 
@@ -85,6 +93,7 @@ const EncounterTimers = () => {
                 <Bar
                     key={timer.key}
                     encounterTimer={timer}
+                    raidDifficultyId={raidDifficultyId}
                 />
             ))}
         </div>
@@ -92,12 +101,14 @@ const EncounterTimers = () => {
 };
 
 const Bar = ({
-    encounterTimer
+    encounterTimer,
+    raidDifficultyId
 }: {
-    encounterTimer: EncounterTimer
+    encounterTimer: EncounterTimer;
+    raidDifficultyId?: RaidDifficultyId;
 }) => {
     const imageUrl = useSpellImageUrl(encounterTimer.spellId!);
-
+    // TODO: encouter_start and encounter_end events
     return (
         <div
             className="
@@ -105,14 +116,19 @@ const Bar = ({
                 flex
             "
         >
-            <img
-                className="
-                    min-h-full aspect-square
-                    bg-lime-400
-                "
-                src={imageUrl}
-                style={{ height: 0 }}
-            />
+            <WowheadTooltip
+                spellId={encounterTimer.spellId || 0}
+                raidDifficulty={raidDifficultyId}
+            >
+                <img
+                    className="
+                        min-h-full aspect-square
+                        bg-lime-400
+                    "
+                    src={imageUrl}
+                    style={{ height: 0 }}
+                />
+            </WowheadTooltip>
             <div
                 className="
                     relative

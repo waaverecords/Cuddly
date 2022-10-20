@@ -1,5 +1,5 @@
 export interface Keyed {
-    key: string | number;
+    key?: string | number;
 }
 
 export interface Timer extends Keyed {

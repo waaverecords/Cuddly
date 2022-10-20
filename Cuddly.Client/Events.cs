@@ -6,7 +6,9 @@ enum EventType
     CLASS_UPDATE,
     ENCOUNTER_TIMER,
     COMBAT_ROLE_UPDATE,
-    POWER_UPDATE
+    POWER_UPDATE,
+    ENCOUNTER_START,
+    ENCOUNTER_END
 }
 
 class Event
@@ -41,6 +43,19 @@ class EncounterTimer : Event
     public string Text { get; set; }
     public int Duration { get; set; }
     public int SpellId { get; set; }
+}
+
+class EncounterStart : Event
+{
+    public int EncounterId { get; set; }
+    public string EncounterName { get; set; }
+    public int DifficultyId { get; set; }
+}
+
+class EncounterEnd : Event
+{
+    public int EncounterId { get; set; }
+    public bool Success { get ; set; }
 }
 
 class UnitGUID_Value<T>

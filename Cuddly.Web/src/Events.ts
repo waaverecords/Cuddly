@@ -1,4 +1,4 @@
-import { Class, CombatRole } from './wowUtilities';
+import { Class, CombatRole, RaidDifficultyId } from './wowUtilities';
 
 export enum EventType {
     COMBAT_LOG_EVENT,
@@ -7,7 +7,9 @@ export enum EventType {
     CLASS_UPDATE,
     ENCOUNTER_TIMER,
     COMBAT_ROLE_UPDATE,
-    POWER_UPDATE
+    POWER_UPDATE,
+    ENCOUNTER_START,
+    ENCOUNTER_END
 };
 
 export interface Event {
@@ -27,6 +29,17 @@ export interface EncounterTimer extends Event {
     duration: number;
     timeLeft: number;
     spellId?: number;
+}
+
+export interface EncounterStart extends Event {
+    encounterId: number;
+    encounterName: string;
+    difficultyId: RaidDifficultyId;
+}
+
+export interface EncounterEnd extends Event {
+    encounterId: number;
+    success: boolean;
 }
 
 export interface UnitGUID_Value<T> {

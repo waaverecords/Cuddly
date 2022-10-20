@@ -88,6 +88,8 @@ using (var bitmap = new Bitmap(170, 80, PixelFormat.Format24bppRgb))
 
             var nextFlag = () => nextByte();
 
+            var nextBool = () => Convert.ToBoolean(nextByte());
+
             var @event = new Event();
             @event.Id = nextInteger();
 
@@ -250,6 +252,27 @@ using (var bitmap = new Bitmap(170, 80, PixelFormat.Format24bppRgb))
                         powerUpdate.Units = units;
                     }
                     break;
+
+                case EventType.ENCOUNTER_START:
+                    {
+                        var encounterStart = new EncounterStart();
+                        @event = encounterStart.Set(@event);
+
+                        encounterStart.EncounterId = nextInteger();
+                        encounterStart.EncounterName = nextString();
+                        encounterStart.DifficultyId = nextInteger();
+                    }
+                    break;
+
+                case EventType.ENCOUNTER_END:
+                    {
+                        var encounterEnd = new EncounterEnd();
+                        @event = encounterEnd.Set(@event);
+
+                        encounterEnd.EncounterId = nextInteger();
+                        encounterEnd.Success = nextBool();
+                    }
+                    break;
             }
             
             events.Add(@event);
@@ -261,7 +284,7 @@ using (var bitmap = new Bitmap(170, 80, PixelFormat.Format24bppRgb))
             }
             catch (Exception) { }
 
-            if (events.Count > bitmap.Width * 2)
+            if (events.Count > bitmap.Width * 3)
                 events.RemoveAt(0);
         }
 
