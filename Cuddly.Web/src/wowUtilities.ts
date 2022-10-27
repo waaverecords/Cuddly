@@ -93,3 +93,11 @@ export enum RaidDifficultyId {
     Heroic = 15,
     Mythic = 16
 }
+
+export enum UnitId {
+    Boss1,
+    Boss2,
+    Boss3,
+    Boss4,
+    Boss5
+}

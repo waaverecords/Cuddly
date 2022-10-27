@@ -1,4 +1,4 @@
-import { Class, CombatRole, RaidDifficultyId } from './wowUtilities';
+import { Class, CombatRole, RaidDifficultyId, UnitId } from './wowUtilities';
 
 export enum EventType {
     COMBAT_LOG_EVENT,
@@ -9,7 +9,8 @@ export enum EventType {
     COMBAT_ROLE_UPDATE,
     POWER_UPDATE,
     ENCOUNTER_START,
-    ENCOUNTER_END
+    ENCOUNTER_END,
+    BOSS_UPDATE
 };
 
 export interface Event {
@@ -60,3 +61,5 @@ export interface ClassUpdate extends EventForUnits<Class> { }
 export interface CombatRoleUpdate extends EventForUnits<CombatRole> { }
 
 export interface PowerUpdate extends EventForUnits<number> { }
+
+export interface BossUpdate extends EventForUnits<UnitId> { }

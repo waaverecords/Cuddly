@@ -273,6 +273,26 @@ using (var bitmap = new Bitmap(170, 80, PixelFormat.Format24bppRgb))
                         encounterEnd.Success = nextBool();
                     }
                     break;
+
+                case EventType.BOSS_UPDATE:
+                    {
+                        var bossUpdate = new BossUpdate();
+                        @event = bossUpdate.Set(@event);
+
+                        // TODO: extract to function
+                        var unitCount = nextByte();
+                        var units = new List<UnitGUID_Value<int>>();
+                        for (var i = 0; i < unitCount; i++)
+                        {
+                            units.Add(new UnitGUID_Value<int>
+                            {
+                                UnitGUID = nextString(),
+                                Value = nextInteger()
+                            });
+                        }
+                        bossUpdate.Units = units;
+                    }
+                    break;
             }
             
             events.Add(@event);

@@ -6,6 +6,7 @@ import EncounterTimers from './widgets/EncounterTimers';
 import HealersMana from './widgets/HealersMana';
 import ActiveRaidCooldownTimers from './widgets/ActiveRaidCooldownTimers';
 import { useState } from 'react';
+import BossFrames from './widgets/BossFrames';
 
 export default function App() {
 
@@ -218,6 +219,11 @@ export default function App() {
                 nameMap={nameMap}
                 classMap={classMap}
                 powerMap={powerMap}
+            />
+            <BossFrames
+                nameMap={nameMap}
+                maxHealthMap={maxHealthMap}
+                healthMap={healthMap}
             />
         </div>
     );

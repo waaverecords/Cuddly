@@ -8,7 +8,8 @@ enum EventType
     COMBAT_ROLE_UPDATE,
     POWER_UPDATE,
     ENCOUNTER_START,
-    ENCOUNTER_END
+    ENCOUNTER_END,
+    BOSS_UPDATE
 }
 
 class Event
@@ -78,3 +79,5 @@ class ClassUpdate : EventForUnits<int> { }
 class CombatRoleUpdate : EventForUnits<int> { }
 
 class PowerUpdate : EventForUnits<int> { }
+
+class BossUpdate : EventForUnits<int> { }
