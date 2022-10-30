@@ -7,6 +7,7 @@ import HealersMana from './widgets/HealersMana';
 import ActiveRaidCooldownTimers from './widgets/ActiveRaidCooldownTimers';
 import { useState } from 'react';
 import BossFrames from './widgets/BossFrames';
+import Movable from './components/Movable';
 
 export default function App() {
 
@@ -120,111 +121,121 @@ export default function App() {
                 bg-neutral-800
             "
         >
-            <div
-                className="
-                    w-[550px]
-                    m-2 p-1
-                    bg-black
-                "
-            >
+            <Movable>
                 <div
                     className="
-                        grid grid-cols-4 auto-rows-[65px]
-                        gap-x-1 gap-y-px
+                        w-[550px]
+                        m-2 p-1
+                        bg-black
                     "
                 >
-                    {Array.from(unitGUIDs)
-                        .filter(unitGUID => unitGUID.startsWith('Player'))
-                        .map(unitGUID => (
-                        <div
-                            key={unitGUID}
-                            className="
-                                flex
-                                w-full h-full
-                                relative
-                            "
-                        >
-                            {/* health bar */}
-                            {!deadMap.get(unitGUID) && (
+                    <div
+                        className="
+                            grid grid-cols-4 auto-rows-[65px]
+                            gap-x-1 gap-y-px
+                        "
+                    >
+                        {Array.from(unitGUIDs)
+                            .filter(unitGUID => unitGUID.startsWith('Player'))
+                            .map(unitGUID => (
+                            <div
+                                key={unitGUID}
+                                className="
+                                    flex
+                                    w-full h-full
+                                    relative
+                                "
+                            >
+                                {/* health bar */}
+                                {!deadMap.get(unitGUID) && (
+                                    <div
+                                        className={clsx(
+                                            `h-full`,
+                                            classMap.get(unitGUID) == undefined && 'bg-neutral-500',
+                                            // @ts-ignore
+                                            classMap.get(unitGUID) != undefined && `bg-[${ClassColor[Class[classMap.get(unitGUID)]]}]`
+                                        )}
+                                        style={{ width: healthMap.get(unitGUID) != undefined && maxHealthMap.get(unitGUID) ? `${Math.min(healthMap.get(unitGUID)! / maxHealthMap.get(unitGUID)! * 100, 100)}%` : '100%' }}
+                                    />
+                                )}
+
+                                {/* name */}
                                 <div
                                     className={clsx(
-                                        `h-full`,
-                                        classMap.get(unitGUID) == undefined && 'bg-neutral-500',
+                                        `
+                                            absolute
+                                            left-1/2 top-1/2
+                                            -translate-x-1/2 -translate-y-1/2
+                                            text-xs text-shadow
+                                        `,
+                                        classMap.get(unitGUID) == undefined && 'text-neutral-500',
                                         // @ts-ignore
-                                        classMap.get(unitGUID) != undefined && `bg-[${ClassColor[Class[classMap.get(unitGUID)]]}]`
+                                        classMap.get(unitGUID) != undefined && `text-[${ClassColor[Class[classMap.get(unitGUID)]]}]`
                                     )}
-                                    style={{ width: healthMap.get(unitGUID) != undefined && maxHealthMap.get(unitGUID) ? `${Math.min(healthMap.get(unitGUID)! / maxHealthMap.get(unitGUID)! * 100, 100)}%` : '100%' }}
-                                />
-                            )}
+                                >
+                                    {nameMap.get(unitGUID) || unitGUID}
+                                </div>
 
-                            {/* name */}
-                            <div
-                                className={clsx(
-                                    `
-                                        absolute
-                                        left-1/2 top-1/2
-                                        -translate-x-1/2 -translate-y-1/2
-                                        text-xs text-shadow
-                                    `,
-                                    classMap.get(unitGUID) == undefined && 'text-neutral-500',
-                                    // @ts-ignore
-                                    classMap.get(unitGUID) != undefined && `text-[${ClassColor[Class[classMap.get(unitGUID)]]}]`
+                                {/* dead */}
+                                {deadMap.get(unitGUID) && (
+                                    <div
+                                        className="
+                                            absolute
+                                            left-1/2 top-3/4
+                                            -translate-x-1/2
+                                            text-[0.6rem] text-white
+                                        "
+                                    >
+                                        Dead
+                                    </div>
                                 )}
-                            >
-                                {nameMap.get(unitGUID) || unitGUID}
+
+                                {/* raid flag */}
+                                {raidFlagMap.get(unitGUID) && (
+                                    <div
+                                        className="
+                                            absolute
+                                            left-1/2 top-0
+                                            -translate-x-1/2 -translate-y-[10px]
+                                        "
+                                    >
+                                        <img
+                                            className="w-[35px]"
+                                            src={RaidFlagImageUrlMap.get(raidFlagMap.get(unitGUID)!)}
+                                        />
+                                    </div>
+                                )}
                             </div>
-
-                            {/* dead */}
-                            {deadMap.get(unitGUID) && (
-                                <div
-                                    className="
-                                        absolute
-                                        left-1/2 top-3/4
-                                        -translate-x-1/2
-                                        text-[0.6rem] text-white
-                                    "
-                                >
-                                    Dead
-                                </div>
-                            )}
-
-                            {/* raid flag */}
-                            {raidFlagMap.get(unitGUID) && (
-                                <div
-                                    className="
-                                        absolute
-                                        left-1/2 top-0
-                                        -translate-x-1/2 -translate-y-[10px]
-                                    "
-                                >
-                                    <img
-                                        className="w-[35px]"
-                                        src={RaidFlagImageUrlMap.get(raidFlagMap.get(unitGUID)!)}
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
-            <ActiveRaidCooldownTimers
-                nameMap={nameMap}
-                classMap={classMap}
-            />
-            <EncounterTimers
-                raidDifficultyId={raidDifficulty}
-            />
-            <HealersMana
-                combatRoleMap={combatRoleMap}
-                nameMap={nameMap}
-                classMap={classMap}
-                powerMap={powerMap}
-            />
-            <BossFrames
-                nameMap={nameMap}
-                maxHealthMap={maxHealthMap}
-                healthMap={healthMap}
-            />
+            </Movable>
+            <Movable>
+                <ActiveRaidCooldownTimers
+                    nameMap={nameMap}
+                    classMap={classMap}
+                />
+            </Movable>
+            <Movable>
+                <EncounterTimers
+                    raidDifficultyId={raidDifficulty}
+                />
+            </Movable>
+            <Movable>
+                <HealersMana
+                    combatRoleMap={combatRoleMap}
+                    nameMap={nameMap}
+                    classMap={classMap}
+                    powerMap={powerMap}
+                />
+            </Movable>
+            <Movable>
+                <BossFrames
+                    nameMap={nameMap}
+                    maxHealthMap={maxHealthMap}
+                    healthMap={healthMap}
+                />
+            </Movable>
         </div>
     );
 };
