@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { UnitGUID } from "../Events";
 import { HookedMap, HookedSet } from "../Hooks";
-import { Class, RaidFlag, RaidFlagImageUrlMap } from "../wowUtilities";
+import { Class, RaidFlag, RaidFlagImageUrlMap, ClassColor } from "../wowUtilities";
 
 interface Props {
     unitGUIDs: HookedSet<UnitGUID>;

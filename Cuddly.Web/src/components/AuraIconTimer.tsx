@@ -53,6 +53,7 @@ const AuraIconTimer = ({
                         brightness-45
                     "
                     src={imageUrl}
+                    draggable={false}
                 />
 
                 {/* front image */}

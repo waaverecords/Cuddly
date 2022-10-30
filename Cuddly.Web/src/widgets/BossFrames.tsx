@@ -1,17 +1,19 @@
 import { BossUpdate, EventType, UnitGUID } from "../Events";
 import { HookedMap, useEvents, useMap } from "../Hooks";
-import { UnitId } from "../wowUtilities";
+import { RaidFlag, RaidFlagImageUrlMap, UnitId } from "../wowUtilities";
 
 interface Props {
     nameMap: HookedMap<UnitGUID, string>;
     maxHealthMap: HookedMap<UnitGUID, number>;
     healthMap: HookedMap<UnitGUID, number>;
+    raidFlagMap: HookedMap<UnitGUID, RaidFlag>;
 }
 
 const BossFrames = ({
     nameMap,
     maxHealthMap,
-    healthMap
+    healthMap,
+    raidFlagMap
 }: Props) => {
 
     const bossUnitIdMap = useMap<UnitId, UnitGUID>();
@@ -108,7 +110,23 @@ const BossFrames = ({
                                     </div>
                                 </>
                             )}
-                        </div>
+
+                            {/* raid flag */}
+                            {raidFlagMap.get(unitGUID) && (
+                                <div
+                                    className="
+                                        absolute
+                                        left-1/2 top-0
+                                        -translate-x-1/2 -translate-y-[10px]
+                                    "
+                                >
+                                    <img
+                                        className="w-[35px]"
+                                        src={RaidFlagImageUrlMap.get(raidFlagMap.get(unitGUID)!)}
+                                    />
+                                </div>
+                            )}
+                            </div>
                     ))}
             </div>
         </div>

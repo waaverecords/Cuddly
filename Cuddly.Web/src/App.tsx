@@ -116,11 +116,16 @@ export default function App() {
     return (
         <div
             className="
+                relative
                 min-w-full min-h-screen
                 bg-neutral-800
+                overflow-hidden
             "
         >
-            <Movable>
+            <Movable
+                name="raidframes"
+                defaultPosition={{x: 0, y: 0}}
+            >
                 <RaidFrames
                     unitGUIDs={unitGUIDs}
                     nameMap={nameMap}
@@ -130,7 +135,10 @@ export default function App() {
                     raidFlagMap={raidFlagMap}
                 />
             </Movable>
-            <Movable>
+            <Movable
+                name="activeraidcooldowntimers"
+                defaultPosition={{x: 1455, y: 8}}
+            >
                 <ActiveRaidCooldownTimers
                     nameMap={nameMap}
                     classMap={classMap}
@@ -138,12 +146,16 @@ export default function App() {
             </Movable>
             <Movable
                 name="encountertimers"
+                defaultPosition={{x: 1140, y: 0}}
             >
                 <EncounterTimers
                     raidDifficultyId={raidDifficulty}
                 />
             </Movable>
-            <Movable>
+            <Movable
+                name="healersmana"
+                defaultPosition={{x: 570, y: 8}}
+            >
                 <HealersMana
                     combatRoleMap={combatRoleMap}
                     nameMap={nameMap}
@@ -152,11 +164,14 @@ export default function App() {
                 />
             </Movable>
             <Movable
+                name="bossframes"
+                defaultPosition={{x: 880, y: 0}}
             >
                 <BossFrames
                     nameMap={nameMap}
                     maxHealthMap={maxHealthMap}
                     healthMap={healthMap}
+                    raidFlagMap={raidFlagMap}
                 />
             </Movable>
         </div>

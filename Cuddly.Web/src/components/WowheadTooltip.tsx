@@ -25,6 +25,7 @@ const WowheadTooltip = ({
             href={`https://wowhead.com/spell=${spellId}`}
             target="_blank"
             data-wowhead={params.toString()}
+            draggable={false}
         >
             {children}
         </a>

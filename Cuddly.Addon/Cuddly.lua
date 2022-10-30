@@ -234,7 +234,7 @@ function UIParent:ADDON_LOADED(name)
         end
 
         local i = 1
-        while i <= 40 do
+        while i <= 45 do
 
             bytes = {}
 
@@ -246,13 +246,26 @@ function UIParent:ADDON_LOADED(name)
             append(unitCount)
             local byteIndex = #bytes
 
-            while unitCount < 9 and i <= 40 do
+            while unitCount < 8 and i <= 40 do
 
                 local name = GetRaidRosterInfo(i)
                 if name ~= nil then
 
                     local unit = "raid" .. i
                     append(StringToBytes(UnitGUID(unit)))
+                    append(IntegerToBytes(UnitHealth(unit)))
+                    unitCount = unitCount + 1
+                end
+
+                i = i + 1
+            end
+
+            while unitCount < 8 and i > 40 and i <= 45 do
+                local unit = "boss".. i - 40
+                local unitGUID = UnitGUID(unit)
+                
+                if unitGUID ~= nil then
+                    append(StringToBytes(unitGUID))
                     append(IntegerToBytes(UnitHealth(unit)))
                     unitCount = unitCount + 1
                 end
@@ -286,7 +299,7 @@ function UIParent:ADDON_LOADED(name)
         end
 
         local i = 1
-        while i <= 40 do
+        while i <= 45 do
 
             bytes = {}
 
@@ -298,13 +311,26 @@ function UIParent:ADDON_LOADED(name)
             append(unitCount)
             local byteIndex = #bytes
 
-            while unitCount < 9 and i <= 40 do
+            while unitCount < 8 and i <= 40 do
 
                 local name = GetRaidRosterInfo(i)
                 if name ~= nil then
 
                     local unit = "raid" .. i
                     append(StringToBytes(UnitGUID(unit)))
+                    append(IntegerToBytes(UnitHealthMax(unit)))
+                    unitCount = unitCount + 1
+                end
+
+                i = i + 1
+            end
+
+            while unitCount < 8 and i > 40 and i <= 45 do
+                local unit = "boss".. i - 40
+                local unitGUID = UnitGUID(unit)
+                
+                if unitGUID ~= nil then
+                    append(StringToBytes(unitGUID))
                     append(IntegerToBytes(UnitHealthMax(unit)))
                     unitCount = unitCount + 1
                 end
@@ -506,12 +532,12 @@ function UIParent:ADDON_LOADED(name)
         local byteIndex = #bytes
 
         for i = 1, 5 do
-            local unitId = "boss"..i
-            local unitGUID = UnitGUID(unitId)
+            local unit = "boss"..i
+            local unitGUID = UnitGUID(unit)
             
             if unitGUID ~= nil then
                 append(StringToBytes(unitGUID))
-                append(IntegerToBytes(UnitIdMap[unitId]))
+                append(IntegerToBytes(UnitIdMap[unit]))
                 unitCount = unitCount + 1
             end
         end

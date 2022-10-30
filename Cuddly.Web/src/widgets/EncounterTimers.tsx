@@ -127,6 +127,7 @@ const Bar = ({
                     "
                     src={imageUrl}
                     style={{ height: 0 }}
+                    draggable={false}
                 />
             </WowheadTooltip>
             <div
