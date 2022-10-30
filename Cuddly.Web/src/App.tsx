@@ -116,7 +116,6 @@ export default function App() {
     return (
         <div
             className="
-                flex items-start
                 min-w-full min-h-screen
                 bg-neutral-800
             "
@@ -216,7 +215,9 @@ export default function App() {
                     classMap={classMap}
                 />
             </Movable>
-            <Movable>
+            <Movable
+                name="encountertimers"
+            >
                 <EncounterTimers
                     raidDifficultyId={raidDifficulty}
                 />
@@ -229,7 +230,8 @@ export default function App() {
                     powerMap={powerMap}
                 />
             </Movable>
-            <Movable>
+            <Movable
+            >
                 <BossFrames
                     nameMap={nameMap}
                     maxHealthMap={maxHealthMap}
