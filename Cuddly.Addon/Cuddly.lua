@@ -18,15 +18,6 @@ function string.endsWith(str, endStr)
     return string.sub(str, -endStr:len(), str:len()) == endStr
 end
 
-function ZeroBasedEnum(table)
-    for i = 1, #table do
-        local value = table[i]
-        table[value] = i - 1
-    end
-
-    return table
-end
-
 local function IntegerToBytes(i)
     if i == nil then
         return { 0, 0, 0 }
@@ -131,45 +122,6 @@ local function NextEventId()
     eventId = (eventId % 16777216) + 1
     return eventId
 end
-
-EventType = ZeroBasedEnum {
-    "COMBAT_LOG_EVENT",
-    "HEALTH_UPDATE",
-    "MAX_HEALTH_UPDATE",
-    "CLASS_UPDATE",
-    "ENCOUNTER_TIMER",
-    "COMBAT_ROLE_UPDATE",
-    "POWER_UPDATE",
-    "ENCOUNTER_START",
-    "ENCOUNTER_END",
-    "BOSS_UPDATE"
-}
-
-CombatRole = ZeroBasedEnum {
-    "NONE",
-    "DAMAGER",
-    "TANK",
-    "HEALER"
-}
-CombatRoleMap = {}
-CombatRoleMap["NONE"] = CombatRole.NONE
-CombatRoleMap["DAMAGER"] = CombatRole.DAMAGER
-CombatRoleMap["TANK"] = CombatRole.TANK
-CombatRoleMap["HEALER"] = CombatRole.HEALER
-
-UnitId = ZeroBasedEnum {
-    "boss1",
-    "boss2",
-    "boss3",
-    "boss4",
-    "boss5",
-}
-UnitIdMap = {}
-UnitIdMap["boss1"] = UnitId.boss1
-UnitIdMap["boss2"] = UnitId.boss2
-UnitIdMap["boss3"] = UnitId.boss3
-UnitIdMap["boss4"] = UnitId.boss4
-UnitIdMap["boss5"] = UnitId.boss5
 
 local function OnBigWigsEvent(event, ...)
     -- TODO: extract as class / object
@@ -610,6 +562,20 @@ function UIParent:COMBAT_LOG_EVENT_UNFILTERED(...)
     --     return
     -- end
 
+    if not LogMap[CombatLogSubEventMap[subEvent]] then
+        return
+    end
+
+    if string.startsWith(subEvent, "RANGE")
+        or string.startsWith(subEvent, "SPELL")
+        or string.startsWith(subEvent, "SPELL_PERIODIC")
+        or string.startsWith(subEvent, "SPELL_BUILDING") then
+        local spellId = select(12, ...)
+        if not LogMap[CombatLogSubEvent[subEvent]] or not LogMap[CombatLogSubEvent[subEvent]][spellId] then
+            return
+        end
+    end
+
     -- TODO: extract as class / object
     local bytes = {}
     local function append(otherBytes)
@@ -662,7 +628,7 @@ function UIParent:COMBAT_LOG_EVENT_UNFILTERED(...)
         or string.startsWith(subEvent, "SPELL")
         or string.startsWith(subEvent, "SPELL_PERIODIC")
         or string.startsWith(subEvent, "SPELL_BUILDING") then
-        spellId, spellName, spellSchool = select(i, ...)
+        local spellId, spellName, spellSchool = select(i, ...)
         append(IntegerToBytes(spellId))
         append(StringToBytes(spellName))
         i = i + 3

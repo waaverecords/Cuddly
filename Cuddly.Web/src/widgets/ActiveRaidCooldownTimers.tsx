@@ -3,7 +3,7 @@ import AuraIconTimer from "../components/AuraIconTimer";
 import { CombatLogEvent, EventType, UnitGUID } from "../Events";
 import { HookedMap, useArray, useEvents, useInterval } from "../Hooks";
 import { Timer } from "../utilities";
-import { Class, ClassColor, CombatLogEvent as CombatLogEventType } from "../wowUtilities";
+import { Class, ClassColor, CombatLogEvent as CombatLogEventType, SpellInfoMap } from "../wowUtilities";
 
 interface ActiveRaidCooldownTimer extends Timer {
     spellId: number;
@@ -46,12 +46,12 @@ const ActiveRaidCooldownTimers = ({
         if (subEvent != CombatLogEventType.SPELL_CAST_SUCCESS)
             return;
 
-        // TODO: test against list of desired spell
+        const duration = SpellInfoMap.get(spellId as number)?.duration || 10;
 
         const timer = {
             key: `${event.id}-${event.timestamp}`,
-            duration: 1000 * 20,// TODO: check for spell durations
-            timeLeft: 1000 * 20,
+            duration: 1000 * duration,
+            timeLeft: 1000 * duration,
             spellId,
             caster: sourceGUID
         } as ActiveRaidCooldownTimer;

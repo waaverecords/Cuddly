@@ -101,3 +101,89 @@ export enum UnitId {
     Boss4,
     Boss5
 }
+
+export interface SpellInfo {
+    name: string;
+    duration?:  number;
+}
+
+export const SpellInfoMap = new Map<number, SpellInfo>();
+
+// Druid
+SpellInfoMap.set(740, {
+    name: 'Tranquility',
+    duration: 8
+});
+
+// Paladin
+SpellInfoMap.set(31821, {
+    name: 'Aura Mastery',
+    duration: 8
+});
+
+// Priest
+SpellInfoMap.set(64843, {
+    name: 'Divine Hymm',
+    duration: 8
+});
+SpellInfoMap.set(62618, {
+    name: 'Power Word: Barrier',
+    duration: 10
+});
+
+// Monk
+SpellInfoMap.set(115310, {
+    name: 'Revival'
+});
+
+// Shaman
+SpellInfoMap.set(108280, {
+    name: 'Healing Tide Totem',
+    duration: 10
+});
+SpellInfoMap.set(16191, {
+    name: 'Mana Tide Totem',
+    duration: 8
+});
+SpellInfoMap.set(16191, {
+    name: 'Spirit Link Totem',
+    duration: 6
+});
+SpellInfoMap.set(2825, {
+    name: 'Bloodlust',
+    duration: 40
+});
+SpellInfoMap.set(32182, {
+    name: 'Heroism',
+    duration: 40
+});
+
+// Demon Hunter
+SpellInfoMap.set(196718, {
+    name: 'Darkness',
+    duration: 8
+});
+
+// Warrior
+SpellInfoMap.set(97462, {
+    name: 'Rallying Cry',
+    duration: 10
+});
+
+// Death Knight
+SpellInfoMap.set(51052, {
+    name: 'Anti-Magic Zone',
+    duration: 8
+});
+
+// Mage
+SpellInfoMap.set(80353, {
+    name: 'Time Warp',
+    duration: 40
+});
+
+// Evoker
+SpellInfoMap.set(390386, {
+    name: 'Fury of the Aspects',
+    duration: 40
+});

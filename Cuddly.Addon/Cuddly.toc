@@ -4,4 +4,6 @@
 ## Author: Waave
 ## Version: 0.0.1
 
+Enums.lua
+Log.lua
 Cuddly.lua
