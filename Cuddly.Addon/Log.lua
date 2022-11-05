@@ -43,3 +43,13 @@ log(CombatLogSubEvent.SPELL_CAST_SUCCESS, 80353) -- Time Warp
 
 -- Evoker
 log(CombatLogSubEvent.SPELL_CAST_SUCCESS, 390386) -- Fury of the Aspects
+
+
+
+-- Eranog
+log(CombatLogSubEvent.SPELL_AURA_APPLIED, 390715) -- Flamerift
+log(CombatLogSubEvent.SPELL_AURA_APPLIED, 370597) -- Kill Order
+log(CombatLogSubEvent.SPELL_AURA_REMOVED, 370597) -- Kill Order
+
+-- Eranog mythic
+log(CombatLogSubEvent.SPELL_AURA_APPLIED, 396094) -- Greater Flamerift

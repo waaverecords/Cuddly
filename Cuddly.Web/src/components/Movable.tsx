@@ -49,6 +49,7 @@ const Movable = ({
             onDrag={onDrag}
             onStop={onStop}
             defaultPosition={_defaultPosition}
+            grid={[10, 10]}
         >
             <div
                 className="absolute"

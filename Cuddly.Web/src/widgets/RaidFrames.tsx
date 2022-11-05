@@ -24,7 +24,7 @@ const RaidFrames = ({
         <div
             className="
                 w-[550px]
-                m-2 p-1
+                p-1
                 bg-black
             "
         >

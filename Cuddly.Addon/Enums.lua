@@ -9,11 +9,13 @@ end
 
 CombatLogSubEvent = ZeroBasedEnum {
     "SPELL_CAST_SUCCESS",
-    "SPELL_AURA_APPLIED"
+    "SPELL_AURA_APPLIED",
+    "SPELL_AURA_REMOVED"
 }
 CombatLogSubEventMap = {}
 CombatLogSubEventMap["SPELL_CAST_SUCCESS"] = CombatLogSubEvent.SPELL_CAST_SUCCESS
 CombatLogSubEventMap["SPELL_AURA_APPLIED"] = CombatLogSubEvent.SPELL_AURA_APPLIED
+CombatLogSubEventMap["SPELL_AURA_REMOVED"] = CombatLogSubEvent.SPELL_AURA_REMOVED
 
 EventType = ZeroBasedEnum {
     "COMBAT_LOG_EVENT",

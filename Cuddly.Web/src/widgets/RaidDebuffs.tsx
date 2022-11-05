@@ -5,9 +5,9 @@ import { HookedMap, useArray, useEvents, useInterval } from "../Hooks";
 import { Timer } from "../utilities";
 import { Class, ClassColor, CombatLogEvent as CombatLogEventType, SpellInfoMap } from "../wowUtilities";
 
-interface ActiveRaidCooldownTimer extends Timer {
+interface RaidDebuff extends Partial<Timer> {
     spellId: number;
-    caster: UnitGUID;
+    afflicted: UnitGUID;
 }
 
 interface Props {
@@ -15,23 +15,23 @@ interface Props {
     classMap: HookedMap<UnitGUID, Class>;
 }
 
-const ActiveRaidCooldownTimers = ({
+const RaidDebuffs = ({
     nameMap,
     classMap
 }: Props) => {
-    const timers = useArray<ActiveRaidCooldownTimer>([
+    const timers = useArray<RaidDebuff>([
         {
+            spellId: 370597,
             duration: 1000 * 20,
             timeLeft: 1000 * 15,
-            spellId: 108280,
-            caster: 'gg',
+            afflicted: 'Player-x6546x4',
             key: 1
         },
         {
             duration: 1000 * 10,
             timeLeft: 1000 * 2.5,
-            spellId: 740,
-            caster: 'druidmr',
+            spellId: 390715,
+            afflicted: 'Player-hrt5y7u5',
             key: 2
         }
     ]);
@@ -41,39 +41,46 @@ const ActiveRaidCooldownTimers = ({
             return;
 
         const combatLogEvent = event as CombatLogEvent;
-        const { subEvent, spellId, sourceGUID } = combatLogEvent.parameters;
+        const { subEvent, spellId, destGUID } = combatLogEvent.parameters;
+        console.log(spellId);
+        switch (subEvent)
+        {
+            case CombatLogEventType.SPELL_AURA_APPLIED:
+                var duration = SpellInfoMap.get(spellId as number)?.duration;
+                duration = duration != undefined ? 1000 * duration : undefined;
 
-        if (subEvent != CombatLogEventType.SPELL_CAST_SUCCESS)
-            return;
+                const timer = {
+                    key: `${event.id}-${event.timestamp}`,
+                    duration,
+                    timeLeft: duration,
+                    spellId,
+                    afflicted: destGUID
+                } as RaidDebuff;
 
-        if (![
-                740, 31821, 64843, 62618, 115310, 108280, 16191, 16191,
-                98008, 2825, 32182, 196718, 97462, 51052, 80353, 390386
-            ].includes(spellId as number))
-            return;
+                timers.hPush(timer);
+            break;
 
-        const duration = SpellInfoMap.get(spellId as number)?.duration || 10;
-
-        const timer = {
-            key: `${event.id}-${event.timestamp}`,
-            duration: 1000 * duration,
-            timeLeft: 1000 * duration,
-            spellId,
-            caster: sourceGUID
-        } as ActiveRaidCooldownTimer;
-
-        timers.hPush(timer);
+            case CombatLogEventType.SPELL_AURA_REMOVED:
+                timers.hFilter(timer =>
+                    timer.spellId != spellId
+                    && timer.afflicted != destGUID
+                );
+            break;
+        }
     });
 
     const ms = 1000 / 60;
     useInterval(() => {
         timers.hReplace(timers => {
             timers.forEach(timer => {
+                if (!timer.timeLeft)
+                    return;
+
                 timer.timeLeft -= ms;
             });
             return timers;
         });
-        timers.hFilter(timer => timer.timeLeft > 0);
+        timers.hFilter(timer => timer.timeLeft == undefined || timer.timeLeft > 0);
     }, ms);
 
     return (
@@ -96,12 +103,12 @@ const ActiveRaidCooldownTimers = ({
                     />
                     <div
                         className={clsx(
-                            classMap.get(timer.caster) == undefined && 'text-neutral-500',
+                            classMap.get(timer.afflicted) == undefined && 'text-neutral-500',
                             // @ts-ignore
-                            classMap.get(timer.caster) != undefined && `text-[${ClassColor[Class[classMap.get(timer.caster)]]}]`
+                            classMap.get(timer.afflicted) != undefined && `text-[${ClassColor[Class[classMap.get(timer.afflicted)]]}]`
                         )}
                     >
-                        {nameMap.get(timer.caster) || timer.caster}
+                        {nameMap.get(timer.afflicted) || timer.afflicted}
                     </div>
                 </div>
             ))}
@@ -109,4 +116,4 @@ const ActiveRaidCooldownTimers = ({
     );
 };
 
-export default ActiveRaidCooldownTimers;
+export default RaidDebuffs;

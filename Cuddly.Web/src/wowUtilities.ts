@@ -85,7 +85,9 @@ export enum CombatRole {
 }
 
 export enum CombatLogEvent {
-    SPELL_CAST_SUCCESS = "SPELL_CAST_SUCCESS"
+    SPELL_CAST_SUCCESS = 'SPELL_CAST_SUCCESS',
+    SPELL_AURA_APPLIED = 'SPELL_AURA_APPLIED',
+    SPELL_AURA_REMOVED = 'SPELL_AURA_REMOVED'
 }
 
 export enum RaidDifficultyId {
@@ -145,7 +147,7 @@ SpellInfoMap.set(16191, {
     name: 'Mana Tide Totem',
     duration: 8
 });
-SpellInfoMap.set(16191, {
+SpellInfoMap.set(98008, {
     name: 'Spirit Link Totem',
     duration: 6
 });
@@ -173,7 +175,7 @@ SpellInfoMap.set(97462, {
 // Death Knight
 SpellInfoMap.set(51052, {
     name: 'Anti-Magic Zone',
-    duration: 8
+    duration: 11
 });
 
 // Mage
@@ -186,4 +188,21 @@ SpellInfoMap.set(80353, {
 SpellInfoMap.set(390386, {
     name: 'Fury of the Aspects',
     duration: 40
+});
+
+
+
+// Eranog
+SpellInfoMap.set(390715, {
+    name: 'Flamerift',
+    duration: 6
+});
+SpellInfoMap.set(370597, {
+    name: 'Kill Order'
+});
+
+// Eranog mythic
+SpellInfoMap.set(396094, {
+    name: 'Greater Flamerift',
+    duration: 6
 });

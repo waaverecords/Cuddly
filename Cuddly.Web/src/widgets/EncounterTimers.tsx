@@ -86,7 +86,6 @@ const EncounterTimers = ({
                 grid
                 gap-x-1 gap-y-px
                 w-[300px]
-                m-2
             "
         >
             {timers.map(timer => (

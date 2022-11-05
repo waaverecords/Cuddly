@@ -8,6 +8,7 @@ import { useState } from 'react';
 import BossFrames from './widgets/BossFrames';
 import Movable from './components/Movable';
 import RaidFrames from './widgets/RaidFrames';
+import RaidDebuffs from './widgets/RaidDebuffs';
 
 export default function App() {
 
@@ -19,7 +20,6 @@ export default function App() {
     const maxHealthMap = useMap<UnitGUID, number>();
     const healthMap = useMap<UnitGUID, number>();
     const powerMap = useMap<UnitGUID, number>();
-    const deadMap = useMap<UnitGUID, boolean>();
     const [raidDifficulty, setRaidDifficulty] = useState<RaidDifficultyId>();
 
     useEvents((event: Event) => {
@@ -124,7 +124,7 @@ export default function App() {
         >
             <Movable
                 name="raidframes"
-                defaultPosition={{x: 0, y: 0}}
+                defaultPosition={{x: 10, y: 10}}
             >
                 <RaidFrames
                     unitGUIDs={unitGUIDs}
@@ -137,7 +137,7 @@ export default function App() {
             </Movable>
             <Movable
                 name="activeraidcooldowntimers"
-                defaultPosition={{x: 1455, y: 8}}
+                defaultPosition={{x: 1470, y: 10}}
             >
                 <ActiveRaidCooldownTimers
                     nameMap={nameMap}
@@ -146,7 +146,7 @@ export default function App() {
             </Movable>
             <Movable
                 name="encountertimers"
-                defaultPosition={{x: 1140, y: 0}}
+                defaultPosition={{x: 1150, y: 10}}
             >
                 <EncounterTimers
                     raidDifficultyId={raidDifficulty}
@@ -154,7 +154,7 @@ export default function App() {
             </Movable>
             <Movable
                 name="healersmana"
-                defaultPosition={{x: 570, y: 8}}
+                defaultPosition={{x: 570, y: 10}}
             >
                 <HealersMana
                     combatRoleMap={combatRoleMap}
@@ -165,13 +165,22 @@ export default function App() {
             </Movable>
             <Movable
                 name="bossframes"
-                defaultPosition={{x: 880, y: 0}}
+                defaultPosition={{x: 880, y: 10}}
             >
                 <BossFrames
                     nameMap={nameMap}
                     maxHealthMap={maxHealthMap}
                     healthMap={healthMap}
                     raidFlagMap={raidFlagMap}
+                />
+            </Movable>
+            <Movable
+                name="raiddebuffs"
+                defaultPosition={{x: 1150, y: 280}}
+            >
+                <RaidDebuffs
+                    nameMap={nameMap}
+                    classMap={classMap}
                 />
             </Movable>
         </div>
