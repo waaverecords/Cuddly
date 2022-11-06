@@ -9,6 +9,18 @@ local function log(combatLogSubEvent, spellId)
     end
 end
 
+local function logAura(spellId)
+    log(CombatLogSubEvent.SPELL_AURA_APPLIED, spellId)
+    log(CombatLogSubEvent.SPELL_AURA_REMOVED, spellId)
+end
+
+local function logStackedAura(spellId)
+    logAura(spellId)
+    log(CombatLogSubEvent.SPELL_AURA_APPLIED_DOSE, spellId)
+    log(CombatLogSubEvent.SPELL_AURA_REMOVED_DOSE, spellId)
+    log(CombatLogSubEvent.SPELL_AURA_REFRESH, spellId)
+end
+
 -- Druid
 log(CombatLogSubEvent.SPELL_CAST_SUCCESS, 740) -- Tranquility
 
@@ -37,6 +49,7 @@ log(CombatLogSubEvent.SPELL_CAST_SUCCESS, 97462) -- Rallying Cry
 
 -- Death Knight
 log(CombatLogSubEvent.SPELL_CAST_SUCCESS, 51052) -- Anti-Magic Zone
+--logStackedAura(194310) -- Festering Wound
 
 -- Mage
 log(CombatLogSubEvent.SPELL_CAST_SUCCESS, 80353) -- Time Warp
@@ -47,9 +60,9 @@ log(CombatLogSubEvent.SPELL_CAST_SUCCESS, 390386) -- Fury of the Aspects
 
 
 -- Eranog
-log(CombatLogSubEvent.SPELL_AURA_APPLIED, 390715) -- Flamerift
-log(CombatLogSubEvent.SPELL_AURA_APPLIED, 370597) -- Kill Order
-log(CombatLogSubEvent.SPELL_AURA_REMOVED, 370597) -- Kill Order
+logAura(390715) -- Flamerift
+logAura(370597) -- Kill Order
+logStackedAura(394906) -- Burning Wound
 
 -- Eranog mythic
 log(CombatLogSubEvent.SPELL_AURA_APPLIED, 396094) -- Greater Flamerift

@@ -555,10 +555,10 @@ function UIParent:COMBAT_LOG_EVENT_UNFILTERED(...)
     -- if not string.startsWith(subEvent, "SPELL") then
     --     return
     -- end
-    -- if not string.endsWith(subEvent, "_DAMAGE") or sourceName ~= "Minimumaddon" then
+    -- if not string.startsWith(subEvent, "SPELL") or sourceName ~= "Adateknight" then
     --     return
     -- end
-    -- if sourceName ~= "Minimumaddon" then
+    -- if sourceName ~= "Adateknight" then
     --     return
     -- end
 
@@ -571,6 +571,7 @@ function UIParent:COMBAT_LOG_EVENT_UNFILTERED(...)
         or string.startsWith(subEvent, "SPELL_PERIODIC")
         or string.startsWith(subEvent, "SPELL_BUILDING") then
         local spellId = select(12, ...)
+
         if not LogMap[CombatLogSubEvent[subEvent]] or not LogMap[CombatLogSubEvent[subEvent]][spellId] then
             return
         end
@@ -638,12 +639,16 @@ function UIParent:COMBAT_LOG_EVENT_UNFILTERED(...)
 
     -- suffixes
     if string.endsWith(subEvent, "_DAMAGE") then
-        local amount, overkill, school, resisted, blocked, asbsorbed, critical, glancing, crushing, isOffHand = select(i,...)
+        local amount, overkill, school, resisted, blocked, asbsorbed, critical, glancing, crushing, isOffHand = select(i, ...)
         append(IntegerToBytes(amount))
         append(IntegerToBytes(overkill > 0 and overkill or 0))
         append(IntegerToBytes(resisted))
         append(IntegerToBytes(blocked))
         append(IntegerToBytes(asbsorbed))
+    elseif string.endsWith(subEvent, "_AURA_APPLIED_DOSE")
+        or string.endsWith(subEvent, "_AURA_REMOVED_DOSE") then
+        local auraType, amount = select(i, ...)
+        append(amount)
     end
 
     RenderBytes(bytes)

@@ -10,12 +10,18 @@ end
 CombatLogSubEvent = ZeroBasedEnum {
     "SPELL_CAST_SUCCESS",
     "SPELL_AURA_APPLIED",
-    "SPELL_AURA_REMOVED"
+    "SPELL_AURA_REMOVED",
+    "SPELL_AURA_APPLIED_DOSE",
+    "SPELL_AURA_REMOVED_DOSE",
+    "SPELL_AURA_REFRESH",
 }
 CombatLogSubEventMap = {}
 CombatLogSubEventMap["SPELL_CAST_SUCCESS"] = CombatLogSubEvent.SPELL_CAST_SUCCESS
 CombatLogSubEventMap["SPELL_AURA_APPLIED"] = CombatLogSubEvent.SPELL_AURA_APPLIED
 CombatLogSubEventMap["SPELL_AURA_REMOVED"] = CombatLogSubEvent.SPELL_AURA_REMOVED
+CombatLogSubEventMap["SPELL_AURA_APPLIED_DOSE"] = CombatLogSubEvent.SPELL_AURA_APPLIED_DOSE
+CombatLogSubEventMap["SPELL_AURA_REMOVED_DOSE"] = CombatLogSubEvent.SPELL_AURA_REMOVED_DOSE
+CombatLogSubEventMap["SPELL_AURA_REFRESH"] = CombatLogSubEvent.SPELL_AURA_REFRESH
 
 EventType = ZeroBasedEnum {
     "COMBAT_LOG_EVENT",

@@ -8,6 +8,7 @@ import { Class, ClassColor, CombatLogEvent as CombatLogEventType, SpellInfoMap }
 interface RaidDebuff extends Partial<Timer> {
     spellId: number;
     afflicted: UnitGUID;
+    stacks?: number;
 }
 
 interface Props {
@@ -33,6 +34,14 @@ const RaidDebuffs = ({
             spellId: 390715,
             afflicted: 'Player-hrt5y7u5',
             key: 2
+        },
+        {
+            duration: 1000 * 30,
+            timeLeft: 1000 * 30,
+            spellId: 194310,
+            afflicted: 'Player-hrt5y7u5',
+            stacks: 4,
+            key: 3
         }
     ]);
 
@@ -41,8 +50,8 @@ const RaidDebuffs = ({
             return;
 
         const combatLogEvent = event as CombatLogEvent;
-        const { subEvent, spellId, destGUID } = combatLogEvent.parameters;
-        console.log(spellId);
+        const { subEvent, spellId, destGUID, amount } = combatLogEvent.parameters;
+        
         switch (subEvent)
         {
             case CombatLogEventType.SPELL_AURA_APPLIED:
@@ -58,14 +67,50 @@ const RaidDebuffs = ({
                 } as RaidDebuff;
 
                 timers.hPush(timer);
-            break;
+                break;
 
             case CombatLogEventType.SPELL_AURA_REMOVED:
                 timers.hFilter(timer =>
                     timer.spellId != spellId
-                    && timer.afflicted != destGUID
+                    || timer.afflicted != destGUID
                 );
-            break;
+                break;
+
+            case CombatLogEventType.SPELL_AURA_APPLIED_DOSE:
+            case CombatLogEventType.SPELL_AURA_REMOVED_DOSE:
+                timers.hReplace(timers =>
+                {
+                    const timer = timers.find(timer =>
+                        timer.spellId == spellId
+                        && timer.afflicted == destGUID
+                    );
+
+                    if (timer)
+                        timer.stacks = amount as number;
+
+                    return timers;
+                });
+                break;
+
+            case CombatLogEventType.SPELL_AURA_REFRESH:
+                timers.hReplace(timers =>
+                    {
+                        const timer = timers.find(timer =>
+                            timer.spellId == spellId
+                            && timer.afflicted == destGUID
+                        );
+    
+                        if (timer)
+                        {
+                            var duration = SpellInfoMap.get(spellId as number)?.duration;
+                            duration = duration != undefined ? 1000 * duration : undefined;
+
+                            timer.timeLeft = duration;
+                        }
+    
+                        return timers;
+                    });
+                break;
         }
     });
 
@@ -100,6 +145,7 @@ const RaidDebuffs = ({
                         spellId={timer.spellId}
                         duration={timer.duration}
                         timeLeft={timer.timeLeft}
+                        stacks={timer.stacks}
                     />
                     <div
                         className={clsx(

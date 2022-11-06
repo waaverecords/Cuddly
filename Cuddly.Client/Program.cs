@@ -139,6 +139,12 @@ using (var bitmap = new Bitmap(170, 80, PixelFormat.Format24bppRgb))
                         parameters.Add("blocked", nextInteger());
                         parameters.Add("asbsorbed", nextInteger());
                     }
+                    
+                    else if (
+                        subEvent.EndsWith("_AURA_APPLIED_DOSE")
+                        || subEvent.EndsWith("_AURA_REMOVED_DOSE")
+                    )
+                        parameters.Add("amount", nextByte());
 
                     break;
 
